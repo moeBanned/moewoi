@@ -112,34 +112,29 @@
 
   function drawWaves(now) {
     const c = waveColor(now);
-    const lines = 8;
+    const lines = 6;
     for (let i = 0; i < lines; i++) {
-      const baseY = h * (i + 1) / (lines + 1);
-      const phase = Math.sin(now * 0.0004 + i * 0.9) * 3;
-      const amp = 14 + 8 * Math.sin(now * 0.0003 + i);
-      const freq = 0.004 + i * 0.0004;
-      const cx = w * (0.5 + 0.35 * Math.sin(now * 0.0003 + i * 0.7));
-      const peak = 0.07 + 0.03 * Math.sin(now * 0.0005 + i * 1.3);
-      const g = ctx.createLinearGradient(cx - w * 0.5, 0, cx + w * 0.5, 0);
-      g.addColorStop(0, rgba(c, 0));
-      g.addColorStop(0.5, rgba(c, peak));
-      g.addColorStop(1, rgba(c, 0));
+      const baseY = h * (i + 1.2) / (lines + 1.4);
+      const amp = 28 + i * 6 + 10 * Math.sin(now * 0.0002 + i);
+      const freq = 0.01 - i * 0.0006;
+      const phase = now * (0.0006 + i * 0.00008) + i * 1.7;
       ctx.beginPath();
-      for (let x = -10; x <= w + 10; x += 12) {
-        const y = baseY + amp * Math.sin(x * freq + phase) + amp * 0.4 * Math.sin(x * freq * 2.3 - phase * 1.4);
+      for (let x = -10; x <= w + 10; x += 10) {
+        const y = baseY + amp * Math.sin(x * freq - phase) + amp * 0.35 * Math.sin(x * freq * 2.1 - phase * 1.3 + i);
         if (x === -10) {
           ctx.moveTo(x, y);
         } else {
           ctx.lineTo(x, y);
         }
       }
-      ctx.strokeStyle = g;
-      ctx.lineWidth = 7;
-      ctx.globalAlpha = 0.25;
+      ctx.strokeStyle = rgba(c, 0.16);
+      ctx.lineWidth = 2.2;
       ctx.stroke();
-      ctx.lineWidth = 1.5;
-      ctx.globalAlpha = 1;
-      ctx.stroke();
+      ctx.lineTo(w + 10, h + 10);
+      ctx.lineTo(-10, h + 10);
+      ctx.closePath();
+      ctx.fillStyle = rgba(c, 0.014);
+      ctx.fill();
     }
   }
 
@@ -263,11 +258,10 @@
     lastWheel = now;
     const toDown = e.deltaY < 0;
     const count = Math.abs(e.deltaY) > 100 ? 2 : 1;
+    const origin = last || { x: w / 2, y: h / 2 };
     for (let k = 0; k < count; k++) {
       const angle = (toDown ? Math.PI / 2 : -Math.PI / 2) + rand(-0.3, 0.3);
-      const x = rand(0.05, 0.95) * w;
-      const y = toDown ? rand(0.05, 0.55) * h : rand(0.45, 0.95) * h;
-      addScratch(x, y, angle, rand(100, 220), 0.17, 0, 2200);
+      addScratch(origin.x + rand(-18, 18), origin.y + rand(-10, 10), angle, rand(90, 180), 0.2, 0, 2000);
     }
   }, { passive: true });
 
