@@ -46,9 +46,15 @@ main,
   padding: 0 20px;
 }
 
+body {
+  padding-top: 64px;
+}
+
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 10;
   background: rgba(0, 0, 0, 0.5);
   border-bottom: 1px solid var(--color-line);
@@ -58,6 +64,9 @@ main,
   display: flex;
   align-items: center;
   height: 64px;
+  max-width: none;
+  margin: 0;
+  padding: 0 0 0 8px;
 }
 
 .logo img {
