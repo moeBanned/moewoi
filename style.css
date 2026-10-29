@@ -1,21 +1,35 @@
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 :root {
+  color-scheme: dark;
   --color-primary: #3bb0c9;
   --color-text: #f3f4f6;
-  --color-bg: #000000;
+  --color-bg: #000;
   --color-line: rgba(255, 255, 255, 0.08);
+  --header-h: 64px;
+}
+
+html {
+  background: var(--color-bg);
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: var(--header-h);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: var(--color-text);
   background: var(--color-bg);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -23,20 +37,22 @@ a {
   text-decoration: none;
 }
 
+#bg,
 #fx {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+}
+
+#bg {
   z-index: 0;
 }
 
-main,
-.site-footer {
-  position: relative;
-  z-index: 1;
+#fx {
+  z-index: 100;
 }
 
 .container {
@@ -46,44 +62,55 @@ main,
   padding: 0 20px;
 }
 
-body {
-  padding-top: 64px;
-}
-
 .site-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.5);
+  height: var(--header-h);
+  background: rgba(0, 0, 0, 0.6);
   border-bottom: 1px solid var(--color-line);
 }
 
 .header-inner {
   display: flex;
   align-items: center;
-  height: 64px;
-  max-width: none;
-  margin: 0;
-  padding: 0 0 0 8px;
+  height: 100%;
+  padding-left: 8px;
+}
+
+.logo {
+  display: block;
+  line-height: 0;
 }
 
 .logo img {
   display: block;
+  width: 48px;
   height: 48px;
-  width: auto;
+}
+
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+main {
+  flex: 1;
 }
 
 .hero {
-  padding: 120px 0;
+  padding: 88px 0;
   text-align: center;
 }
 
 .hero h1 {
-  font-size: 2.5rem;
   margin-bottom: 16px;
+  font-size: 2.5rem;
   color: var(--color-primary);
+  text-wrap: balance;
 }
 
 .hero p {
@@ -91,12 +118,20 @@ body {
 }
 
 .section {
-  padding: 80px 0;
+  padding: 64px 0;
   text-align: center;
 }
 
 .section h2 {
   margin-bottom: 16px;
+}
+
+.section a {
+  color: var(--color-primary);
+}
+
+.section a:hover {
+  text-decoration: underline;
 }
 
 .site-footer {
@@ -112,5 +147,9 @@ body {
 
   .hero h1 {
     font-size: 1.75rem;
+  }
+
+  .section {
+    padding: 56px 0;
   }
 }

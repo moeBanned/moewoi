@@ -5,17 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trần Kiến Quốc</title>
   <meta name="description" content="Thích mèo. Sinh viên LHU ngành CNTT.">
-  <link rel="icon" href="logo.png">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Trần Kiến Quốc">
+  <meta property="og:description" content="Thích mèo. Sinh viên LHU ngành CNTT.">
+  <meta property="og:image" content="logo.png">
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="preload" href="logo.png" as="image">
   <link rel="stylesheet" href="style.css">
   <script src="effects.js" defer></script>
 </head>
 <body>
-  <canvas id="fx"></canvas>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <canvas id="fx" aria-hidden="true"></canvas>
 
   <header class="site-header">
-    <div class="container header-inner">
-      <a href="/" class="logo">
-        <img src="logo.png" alt="Logo">
+    <div class="header-inner">
+      <a href="./" class="logo" aria-label="Trang chủ">
+        <img src="logo.png" alt="Logo mèo" width="48" height="48" fetchpriority="high" decoding="async">
       </a>
     </div>
   </header>
@@ -32,7 +42,7 @@
     <section class="section">
       <div class="container">
         <h2>Liên hệ</h2>
-        <p>Email: 126000492@lachong.edu.vn</p>
+        <p>Email: <a href="mailto:126000492@lachong.edu.vn">126000492@lachong.edu.vn</a></p>
       </div>
     </section>
   </main>
