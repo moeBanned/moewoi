@@ -2,7 +2,6 @@
   'use strict';
 
   const CURSOR = 24;
-  const BG_SCALE = 0.5;
   const MAX_FX = 160;
   const CLICK_SCRATCH_CHANCE = 0.4;
   const WHEEL_GAP = 350;
@@ -93,9 +92,9 @@
     fxCanvas.width = Math.round(w * dpr);
     fxCanvas.height = Math.round(h * dpr);
     fxc.setTransform(dpr, 0, 0, dpr, 0, 0);
-    bgCanvas.width = Math.round(w * BG_SCALE);
-    bgCanvas.height = Math.round(h * BG_SCALE);
-    bg.setTransform(BG_SCALE, 0, 0, BG_SCALE, 0, 0);
+    bgCanvas.width = Math.round(w * dpr);
+    bgCanvas.height = Math.round(h * dpr);
+    bg.setTransform(dpr, 0, 0, dpr, 0, 0);
     dirty = false;
     if (reduceMotion.matches) {
       drawWaves(0);
