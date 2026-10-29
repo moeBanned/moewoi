@@ -17,6 +17,7 @@
   <link rel="preload" href="logo.png" as="image">
   <link rel="stylesheet" href="style.css">
   <script src="effects.js" defer></script>
+  <script src="menu.js" defer></script>
 </head>
 <body>
   <canvas id="bg" aria-hidden="true"></canvas>
@@ -27,6 +28,17 @@
       <a href="./" class="logo" aria-label="Trang chủ">
         <img src="logo.png" alt="Logo mèo" width="48" height="48" fetchpriority="high" decoding="async">
       </a>
+
+      <nav class="menu" aria-label="Menu chính">
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu-panel">Menu</button>
+        <ul class="menu-panel" id="menu-panel">
+          <li><a href="gioi-thieu.html">Giới thiệu</a></li>
+          <li><a href="thong-tin.html">Thông tin</a></li>
+          <li><a href="thu-vien-meo.html">Thư viện mèo</a></li>
+          <li><a href="lien-ket.html">Liên kết</a></li>
+          <li><a href="lien-he.html">Liên hệ</a></li>
+        </ul>
+      </nav>
     </div>
   </header>
 
@@ -38,19 +50,10 @@
         <p>Sinh viên LHU ngành CNTT</p>
       </div>
     </section>
-
-    <section class="section">
-      <div class="container">
-        <h2>Liên hệ</h2>
-        <p>Email: <a href="mailto:126000492@lachong.edu.vn">126000492@lachong.edu.vn</a></p>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
-    <div class="container">
-      <p>&copy; 2026 Where is my moew ?</p>
-    </div>
+    <p>&copy; 2026 Where is my moew ?</p>
   </footer>
 </body>
 </html>
