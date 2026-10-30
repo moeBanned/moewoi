@@ -231,3 +231,59 @@ main {
 .menu-panel a[aria-current="page"] {
   color: var(--color-primary);
 }
+
+.hero-compact {
+  padding-bottom: 32px;
+}
+
+.info {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+
+.info-list {
+  display: grid;
+  gap: 12px;
+}
+
+.info-list li {
+  padding: 14px 18px;
+  background: rgba(12, 12, 12, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+}
+
+.info-list .label {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(243, 244, 246, 0.6);
+}
+
+.info-list a {
+  color: var(--color-primary);
+  word-break: break-all;
+}
+
+.info-list a:hover {
+  text-decoration: underline;
+}
+
+.dash-list {
+  display: grid;
+  gap: 10px;
+  font-size: 1.125rem;
+}
+
+.dash-list li {
+  display: flex;
+  gap: 12px;
+}
+
+.dash-list li::before {
+  content: "\2013";
+  color: var(--color-primary);
+}

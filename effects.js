@@ -44,7 +44,6 @@
   let last = null;
   let stepDist = 0;
   let side = 1;
-  let lastRipple = 0;
   let lastWheel = 0;
   let lastWheelDir = 0;
 
@@ -174,7 +173,7 @@
   }
 
   function drawRipple(f, t, color) {
-    const r = 4 + t * 40;
+    const r = 3 + t * f.r;
     const a = 0.32 * Math.pow(1 - t, 1.6);
     fxc.lineWidth = 1.2;
     fxc.strokeStyle = rgba(color, a);
@@ -350,11 +349,10 @@
         const ang = Math.atan2(dy, dx);
         side = -side;
         const off = CURSOR * 0.18 * side;
-        addPaw(x - Math.sin(ang) * off, y + Math.cos(ang) * off, CURSOR / 3, ang + Math.PI / 2, 0.55, 1400);
-      }
-      if (d > 0 && now - lastRipple > 70) {
-        lastRipple = now;
-        addFx({ type: RIPPLE, x: x, y: y, born: now, life: 1200 });
+        const px = x - Math.sin(ang) * off;
+        const py = y + Math.cos(ang) * off;
+        addPaw(px, py, CURSOR / 3, ang + Math.PI / 2, 0.55, 1400);
+        addFx({ type: RIPPLE, x: px, y: py, r: CURSOR * 1.1, born: now, life: 1200 });
       }
     }
     last = { x: x, y: y };
