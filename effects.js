@@ -122,14 +122,15 @@
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const bdpr = Math.min(dpr, 1.5);
     w = window.innerWidth;
     h = window.innerHeight;
     fxCanvas.width = Math.round(w * dpr);
     fxCanvas.height = Math.round(h * dpr);
     fxc.setTransform(dpr, 0, 0, dpr, 0, 0);
-    bgCanvas.width = Math.round(w * dpr);
-    bgCanvas.height = Math.round(h * dpr);
-    bg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    bgCanvas.width = Math.round(w * bdpr);
+    bgCanvas.height = Math.round(h * bdpr);
+    bg.setTransform(bdpr, 0, 0, bdpr, 0, 0);
     dirty = false;
     if (reduceMotion.matches) {
       drawWaves(0);
@@ -371,14 +372,14 @@
       t.dx = ux;
       t.dy = uy;
     } else {
-      const sx = t.dx * 0.65 + ux * 0.35;
-      const sy = t.dy * 0.65 + uy * 0.35;
+      const sx = t.dx * 0.82 + ux * 0.18;
+      const sy = t.dy * 0.82 + uy * 0.18;
       const sl = Math.hypot(sx, sy) || 1;
       t.dx = sx / sl;
       t.dy = sy / sl;
     }
     for (let k = 0; k < CLAWS; k++) {
-      t.jit[k] = clamp(t.jit[k] + rand(-0.3, 0.3), -1.4, 1.4);
+      t.jit[k] = clamp(t.jit[k] * 0.9 + rand(-0.12, 0.12), -0.7, 0.7);
     }
     const nx = -t.dy;
     const ny = t.dx;
@@ -1074,12 +1075,15 @@
     });
   }
 
+  let lastWave = 0;
+
   function frame(now) {
     raf = 0;
     const dt = lastFrame ? Math.min(0.05, (now - lastFrame) / 1000) : 0.016;
     lastFrame = now;
     const still = reduceMotion.matches;
-    if (!still || pieces.length) {
+    if (pieces.length || (!still && now - lastWave >= 30)) {
+      lastWave = now;
       drawWaves(still ? 0 : now);
     }
     if (pieces.length) {
@@ -1145,7 +1149,14 @@
     if (!d.moved && Math.hypot(x - d.sx, y - d.sy) > CLICK_MOVE) {
       d.moved = true;
     }
-    const seg = extendTrail(d.trail, x, y, now);
+    if (d.fx === undefined) {
+      d.fx = x;
+      d.fy = y;
+    } else {
+      d.fx += (x - d.fx) * 0.6;
+      d.fy += (y - d.fy) * 0.6;
+    }
+    const seg = extendTrail(d.trail, d.fx, d.fy, now);
     if (!seg) {
       return;
     }
@@ -1163,7 +1174,7 @@
       const b = seg.b.c[k];
       cutSegment(sheet, { x: a.x + sx, y: a.y + sy }, { x: b.x + sx, y: b.y + sy });
     }
-    if (now - sheet.lastCheck > 90) {
+    if (now - sheet.lastCheck > Math.max(90, sheet.W * sheet.H / FINE_MAX * 200)) {
       sheet.lastCheck = now;
       checkSheet();
     }
