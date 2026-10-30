@@ -6,6 +6,7 @@
     return;
   }
   const button = menu.querySelector('.menu-btn');
+  const canHover = window.matchMedia('(hover: hover)');
 
   function setOpen(open) {
     menu.classList.toggle('open', open);
@@ -13,6 +14,9 @@
   }
 
   button.addEventListener('click', function () {
+    if (canHover.matches) {
+      return;
+    }
     setOpen(!menu.classList.contains('open'));
   });
 
@@ -25,6 +29,7 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       setOpen(false);
+      button.blur();
     }
   });
 })();
