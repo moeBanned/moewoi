@@ -290,3 +290,15 @@ main {
   content: "\2013";
   color: var(--color-primary);
 }
+
+::selection {
+  color: #fff;
+  background: transparent;
+}
+
+.paper-sheet {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.55));
+}
