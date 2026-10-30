@@ -44,7 +44,9 @@
   const SLIT_MAX = 4.4;
   const GRAVITY = 70;
   const FALL_MAX = 170;
-  const FADE_DIST = 140;
+  const FADE_TIME = 0.8;
+  const FINE_MAX = 650000;
+  const TRAIL_BUCKETS = 28;
 
   const bgCanvas = document.getElementById('bg');
   const fxCanvas = document.getElementById('fx');
@@ -197,27 +199,52 @@
     bg.globalCompositeOperation = 'source-over';
   }
 
+  function floorY() {
+    const f = document.querySelector('.site-footer');
+    return f ? f.getBoundingClientRect().top : h;
+  }
+
   function drawPieces(dt) {
     const sx = window.scrollX;
     const sy = window.scrollY;
+    const floor = floorY();
     let keep = 0;
+    bg.imageSmoothingEnabled = true;
+    bg.imageSmoothingQuality = 'high';
     for (let i = 0; i < pieces.length; i++) {
       const p = pieces[i];
       p.age += dt;
-      p.vy = Math.min(FALL_MAX, p.vy + GRAVITY * dt);
+      if (p.landed) {
+        p.vy = Math.max(0, p.vy - 260 * dt);
+        p.vr *= Math.max(0, 1 - 3 * dt);
+      } else {
+        p.vy = Math.min(FALL_MAX, p.vy + GRAVITY * dt);
+      }
       p.y += p.vy * dt;
       p.rot += p.vr * dt;
       const px = p.x0 + p.vx * p.age + (Math.sin(p.age * p.sf + p.sp) - Math.sin(p.sp)) * p.sa;
-      const vy = p.y - sy;
-      const alpha = clamp((h - vy) / FADE_DIST, 0, 1);
-      if (alpha <= 0 || vy > h + p.h) {
+      const cy = p.y - sy;
+      const th = p.rot + (Math.sin(p.age * p.sf * 0.8 + p.sp) - Math.sin(p.sp)) * 0.12;
+      const reach = Math.abs(Math.cos(th)) * p.h / 2 + Math.abs(Math.sin(th)) * p.w / 2;
+      p.cx = px - sx;
+      p.cy = cy;
+      p.th = th;
+      if (cy + reach >= floor) {
+        p.landed = true;
+        p.fade += dt / FADE_TIME;
+      }
+      const alpha = 1 - p.fade;
+      if (alpha <= 0 || cy - reach > h) {
         continue;
       }
       pieces[keep++] = p;
       bg.save();
       bg.globalAlpha = alpha;
-      bg.translate(px - sx, vy);
-      bg.rotate(p.rot + Math.sin(p.age * p.sf * 0.8 + p.sp) * 0.12);
+      bg.shadowColor = 'rgba(0, 0, 0, 0.55)';
+      bg.shadowBlur = 5;
+      bg.shadowOffsetY = 2;
+      bg.translate(p.cx, cy);
+      bg.rotate(th);
       bg.drawImage(p.canvas, -p.w / 2, -p.h / 2, p.w, p.h);
       bg.restore();
     }
@@ -366,29 +393,65 @@
     return { a: prev, b: p };
   }
 
+  function strokeSmooth(list, k) {
+    const n = list.length;
+    if (n < 2) {
+      return;
+    }
+    fxc.beginPath();
+    fxc.moveTo(list[0].c[k].x, list[0].c[k].y);
+    if (n === 2) {
+      fxc.lineTo(list[1].c[k].x, list[1].c[k].y);
+    } else {
+      for (let i = 1; i < n - 1; i++) {
+        const q = list[i].c[k];
+        const r = list[i + 1].c[k];
+        fxc.quadraticCurveTo(q.x, q.y, (q.x + r.x) / 2, (q.y + r.y) / 2);
+      }
+      fxc.lineTo(list[n - 1].c[k].x, list[n - 1].c[k].y);
+    }
+    fxc.stroke();
+  }
+
   function drawTrails(now) {
     let keep = 0;
-    fxc.lineCap = 'round';
-    fxc.lineWidth = 1.7;
+    fxc.lineCap = 'butt';
+    fxc.lineJoin = 'round';
     for (let ti = 0; ti < trails.length; ti++) {
       const t = trails[ti];
       const pts = t.pts;
       let alive = !t.ended;
-      for (let i = 1; i < pts.length; i++) {
+      const groups = [];
+      let g = null;
+      for (let i = 0; i < pts.length; i++) {
         const p = pts[i];
-        const q = pts[i - 1];
         const age = now - p.t;
-        if (age >= DRAG_LIFE || !p.c || !q.c) {
+        if (age >= DRAG_LIFE || !p.c) {
+          g = null;
           continue;
         }
         alive = true;
-        const a = 0.4 * (1 - age / DRAG_LIFE) * Math.min(1, p.n / 4);
+        const b = Math.min(TRAIL_BUCKETS - 1, Math.floor(age / DRAG_LIFE * TRAIL_BUCKETS));
+        if (!g || g.b !== b) {
+          const prev = g ? g.pts[g.pts.length - 1] : null;
+          g = { b: b, pts: prev ? [prev, p] : [p] };
+          groups.push(g);
+        } else {
+          g.pts.push(p);
+        }
+      }
+      for (let gi = 0; gi < groups.length; gi++) {
+        const grp = groups[gi];
+        if (grp.pts.length < 2) {
+          continue;
+        }
+        const u = (grp.b + 0.5) / TRAIL_BUCKETS;
+        const ramp = Math.min(1, grp.pts[0].n / 6);
+        const a = 0.42 * Math.pow(1 - u, 1.3) * ramp;
+        fxc.lineWidth = 0.9 + 0.9 * (1 - u);
         for (let k = 0; k < CLAWS; k++) {
           fxc.strokeStyle = rgba(SCRATCH_COLOR, a * t.gain[k]);
-          fxc.beginPath();
-          fxc.moveTo(q.c[k].x, q.c[k].y);
-          fxc.lineTo(p.c[k].x, p.c[k].y);
-          fxc.stroke();
+          strokeSmooth(grp.pts, k);
         }
       }
       if (alive) {
@@ -491,22 +554,23 @@
     }
   }
 
-  function analyze(sh) {
-    const W = sh.W;
-    const H = sh.H;
-    const cd = CELL * sh.S;
-    const cols = sh.cols;
-    const rows = sh.rows;
-    const img = sh.mctx.getImageData(0, 0, W, H);
-    const a = img.data;
+  function labelAlpha(a, W, H, cd) {
+    const cols = Math.ceil(W / cd);
+    const rows = Math.ceil(H / cd);
     const n = cols * rows;
     const filled = new Uint8Array(n);
-    for (let r = 0; r < rows; r++) {
-      const y = Math.min(H - 1, Math.floor((r + 0.5) * cd));
-      for (let c = 0; c < cols; c++) {
-        const x = Math.min(W - 1, Math.floor((c + 0.5) * cd));
-        if (a[(y * W + x) * 4 + 3] > 127) {
-          filled[r * cols + c] = 1;
+    if (cd === 1) {
+      for (let i = 0; i < n; i++) {
+        filled[i] = a[i * 4 + 3] > 127 ? 1 : 0;
+      }
+    } else {
+      for (let r = 0; r < rows; r++) {
+        const y = Math.min(H - 1, Math.floor((r + 0.5) * cd));
+        for (let c = 0; c < cols; c++) {
+          const x = Math.min(W - 1, Math.floor((c + 0.5) * cd));
+          if (a[(y * W + x) * 4 + 3] > 127) {
+            filled[r * cols + c] = 1;
+          }
         }
       }
     }
@@ -537,14 +601,89 @@
       }
       comps.push(comp);
     }
-    return { img: img, labels: labels, comps: comps };
+    return { labels: labels, comps: comps, cols: cols, rows: rows };
   }
 
-  function spawnPiece(canvas, x, y, pw, ph) {
-    pieces.push({
+  function analyze(sh) {
+    const img = sh.mctx.getImageData(0, 0, sh.W, sh.H);
+    const r = labelAlpha(img.data, sh.W, sh.H, sh.cd);
+    return { img: img, labels: r.labels, comps: r.comps, cols: r.cols, rows: r.rows };
+  }
+
+  function neighborLabel(labels, cols, rows, x, y) {
+    if (x > 0 && labels[y * cols + x - 1] !== -1) { return labels[y * cols + x - 1]; }
+    if (x < cols - 1 && labels[y * cols + x + 1] !== -1) { return labels[y * cols + x + 1]; }
+    if (y > 0 && labels[(y - 1) * cols + x] !== -1) { return labels[(y - 1) * cols + x]; }
+    if (y < rows - 1 && labels[(y + 1) * cols + x] !== -1) { return labels[(y + 1) * cols + x]; }
+    return -1;
+  }
+
+  function minCells(cd, sc) {
+    const cell = (cd / sc) * (cd / sc);
+    return Math.max(3, Math.ceil(2 / cell));
+  }
+
+  function extractComp(c, res, cd, W, H, src, zero) {
+    const labels = res.labels;
+    const cols = res.cols;
+    const rows = res.rows;
+    const px0 = Math.max(0, Math.floor((c.minc - 1) * cd));
+    const py0 = Math.max(0, Math.floor((c.minr - 1) * cd));
+    const px1 = Math.min(W, Math.ceil((c.maxc + 2) * cd));
+    const py1 = Math.min(H, Math.ceil((c.maxr + 2) * cd));
+    const pw = px1 - px0;
+    const ph = py1 - py0;
+    if (pw < 1 || ph < 1) {
+      return null;
+    }
+    const out = c.keep ? new ImageData(pw, ph) : null;
+    for (let y = py0; y < py1; y++) {
+      const r = Math.min(rows - 1, Math.floor(y / cd));
+      for (let x = px0; x < px1; x++) {
+        const cc = Math.min(cols - 1, Math.floor(x / cd));
+        let lab = labels[r * cols + cc];
+        const i = (y * W + x) * 4;
+        if (lab === -1 && cd === 1) {
+          if (zero[i + 3] === 0) {
+            continue;
+          }
+          lab = neighborLabel(labels, cols, rows, x, y);
+          if (lab === -1) {
+            continue;
+          }
+        }
+        if (lab !== c.id && lab !== -1) {
+          continue;
+        }
+        if (out && lab === c.id) {
+          const o = ((y - py0) * pw + (x - px0)) * 4;
+          out.data[o] = src[i];
+          out.data[o + 1] = src[i + 1];
+          out.data[o + 2] = src[i + 2];
+          out.data[o + 3] = src[i + 3];
+        }
+        zero[i + 3] = 0;
+      }
+    }
+    if (!out) {
+      return null;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = pw;
+    canvas.height = ph;
+    canvas.getContext('2d', { willReadFrequently: true }).putImageData(out, 0, 0);
+    return { canvas: canvas, px0: px0, py0: py0, pw: pw, ph: ph };
+  }
+
+  function spawnPiece(canvas, x, y, pw, ph, base) {
+    const sx = window.scrollX;
+    const sy = window.scrollY;
+    const p = {
       canvas: canvas,
+      ctx: canvas.getContext('2d', { willReadFrequently: true }),
       w: pw,
       h: ph,
+      sc: canvas.width / pw,
       x0: x + pw / 2,
       y: y + ph / 2,
       vx: rand(-5, 5),
@@ -554,9 +693,128 @@
       sa: rand(8, 20),
       sf: rand(0.9, 1.7),
       sp: rand(0, TAU),
-      age: 0
-    });
+      age: 0,
+      fade: 0,
+      landed: false,
+      cut: false,
+      lastCheck: 0
+    };
+    if (base) {
+      Object.keys(base).forEach(function (k) {
+        p[k] = base[k];
+      });
+    }
+    p.cx = p.x0 - sx;
+    p.cy = p.y - sy;
+    p.th = p.rot;
+    if (pieces.length > 80) {
+      pieces.shift();
+    }
+    pieces.push(p);
     start();
+    return p;
+  }
+
+  function cutPiece(p, a, b) {
+    const cs = Math.cos(p.th);
+    const sn = Math.sin(p.th);
+    const hw = p.w / 2;
+    const hh = p.h / 2;
+    const ax = a.x - p.cx;
+    const ay = a.y - p.cy;
+    const bx = b.x - p.cx;
+    const by = b.y - p.cy;
+    const lax = ax * cs + ay * sn;
+    const lay = -ax * sn + ay * cs;
+    const lbx = bx * cs + by * sn;
+    const lby = -bx * sn + by * cs;
+    const pad = 4;
+    if ((lax < -hw - pad && lbx < -hw - pad) || (lax > hw + pad && lbx > hw + pad) ||
+        (lay < -hh - pad && lby < -hh - pad) || (lay > hh + pad && lby > hh + pad)) {
+      return;
+    }
+    const c = p.ctx;
+    const mx = (lax + lbx) / 2 + rand(-1.3, 1.3);
+    const my = (lay + lby) / 2 + rand(-1.3, 1.3);
+    c.setTransform(p.sc, 0, 0, p.sc, hw * p.sc, hh * p.sc);
+    c.globalCompositeOperation = 'destination-out';
+    c.lineCap = 'round';
+    c.lineJoin = 'round';
+    c.strokeStyle = '#000';
+    c.lineWidth = rand(SLIT_MIN, SLIT_MAX);
+    c.beginPath();
+    c.moveTo(lax, lay);
+    c.lineTo(mx, my);
+    c.lineTo(lbx, lby);
+    c.stroke();
+    c.globalCompositeOperation = 'source-over';
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    p.cut = true;
+  }
+
+  function tearPieces(seg) {
+    for (let k = 0; k < CLAWS; k++) {
+      const a = seg.a.c[k];
+      const b = seg.b.c[k];
+      for (let i = 0; i < pieces.length; i++) {
+        cutPiece(pieces[i], a, b);
+      }
+    }
+  }
+
+  function splitPiece(p) {
+    const W = p.canvas.width;
+    const H = p.canvas.height;
+    const img = p.ctx.getImageData(0, 0, W, H);
+    const cd = W * H <= FINE_MAX ? 1 : Math.max(1, CELL * p.sc);
+    const res = labelAlpha(img.data, W, H, cd);
+    if (res.comps.length === 1) {
+      return false;
+    }
+    const src = new Uint8ClampedArray(img.data);
+    const zero = img.data;
+    const min = minCells(cd, p.sc);
+    const cs = Math.cos(p.th);
+    const sn = Math.sin(p.th);
+    const sx = window.scrollX;
+    const sy = window.scrollY;
+    res.comps.forEach(function (c) {
+      c.keep = c.size >= min;
+      const ex = extractComp(c, res, cd, W, H, src, zero);
+      if (!ex) {
+        return;
+      }
+      const lcx = (ex.px0 + ex.pw / 2) / p.sc - p.w / 2;
+      const lcy = (ex.py0 + ex.ph / 2) / p.sc - p.h / 2;
+      const wx = lcx * cs - lcy * sn;
+      const wy = lcx * sn + lcy * cs;
+      const cw = ex.pw / p.sc;
+      const ch = ex.ph / p.sc;
+      spawnPiece(ex.canvas, p.cx + wx + sx - cw / 2, p.cy + wy + sy - ch / 2, cw, ch, {
+        rot: p.th,
+        vx: p.vx + rand(-12, 12),
+        vy: p.vy + rand(0, 10),
+        vr: p.vr + rand(-0.4, 0.4),
+        fade: p.fade,
+        landed: p.landed
+      });
+    });
+    return true;
+  }
+
+  function checkPieces(force) {
+    const now = performance.now();
+    for (let i = pieces.length - 1; i >= 0; i--) {
+      const p = pieces[i];
+      if (!p.cut || (!force && now - p.lastCheck < 90)) {
+        continue;
+      }
+      p.cut = false;
+      p.lastCheck = now;
+      if (splitPiece(p)) {
+        pieces.splice(i, 1);
+      }
+    }
   }
 
   function checkSheet() {
@@ -567,8 +825,6 @@
     sh.cut = false;
     const res = analyze(sh);
     const comps = res.comps;
-    const labels = res.labels;
-    const a = res.img.data;
     const best = new Map();
     comps.forEach(function (c) {
       const g = sh.group[c.first];
@@ -581,47 +837,13 @@
       return best.get(sh.group[c.first]) !== c;
     });
     if (falling.length) {
-      const W = sh.W;
-      const H = sh.H;
-      const S = sh.S;
-      const cd = CELL * S;
-      const disp = sh.ctx.getImageData(0, 0, W, H).data;
+      const disp = sh.ctx.getImageData(0, 0, sh.W, sh.H).data;
+      const min = minCells(sh.cd, sh.S);
       falling.forEach(function (c) {
-        const px0 = Math.max(0, Math.floor((c.minc - 1) * cd));
-        const py0 = Math.max(0, Math.floor((c.minr - 1) * cd));
-        const px1 = Math.min(W, Math.ceil((c.maxc + 2) * cd));
-        const py1 = Math.min(H, Math.ceil((c.maxr + 2) * cd));
-        const pw = px1 - px0;
-        const ph = py1 - py0;
-        if (pw < 1 || ph < 1) {
-          return;
-        }
-        const out = c.size >= 3 ? new ImageData(pw, ph) : null;
-        for (let y = py0; y < py1; y++) {
-          const r = Math.min(sh.rows - 1, Math.floor(y / cd));
-          for (let x = px0; x < px1; x++) {
-            const cc = Math.min(sh.cols - 1, Math.floor(x / cd));
-            const lab = labels[r * sh.cols + cc];
-            if (lab !== c.id && lab !== -1) {
-              continue;
-            }
-            const i = (y * W + x) * 4;
-            if (out && lab === c.id) {
-              const o = ((y - py0) * pw + (x - px0)) * 4;
-              out.data[o] = disp[i];
-              out.data[o + 1] = disp[i + 1];
-              out.data[o + 2] = disp[i + 2];
-              out.data[o + 3] = disp[i + 3];
-            }
-            a[i + 3] = 0;
-          }
-        }
-        if (out) {
-          const pc = document.createElement('canvas');
-          pc.width = pw;
-          pc.height = ph;
-          pc.getContext('2d').putImageData(out, 0, 0);
-          spawnPiece(pc, sh.x0 + px0 / S, sh.y0 + py0 / S, pw / S, ph / S);
+        c.keep = c.size >= min;
+        const ex = extractComp(c, res, sh.cd, sh.W, sh.H, disp, res.img.data);
+        if (ex) {
+          spawnPiece(ex.canvas, sh.x0 + ex.px0 / sh.S, sh.y0 + ex.py0 / sh.S, ex.pw / sh.S, ex.ph / sh.S);
         }
       });
       sh.mctx.putImageData(res.img, 0, 0);
@@ -774,14 +996,19 @@
     y0 = Math.floor(y0 - PAPER_MARGIN);
     x1 = Math.ceil(x1 + PAPER_MARGIN);
     y1 = Math.ceil(y1 + PAPER_MARGIN);
-    const S = Math.min(window.devicePixelRatio || 1, 2);
     const sw = x1 - x0;
     const sh = y1 - y0;
+    let S = Math.min(3, Math.max(2, (window.devicePixelRatio || 1) * 1.5));
+    while (S > 1 && sw * sh * S * S > FINE_MAX) {
+      S -= 0.5;
+    }
+    S = Math.max(1, S);
     if (sw < 4 || sh < 4 || sw * sh * S * S > PAPER_MAX_PIXELS) {
       return;
     }
     const W = Math.round(sw * S);
     const H = Math.round(sh * S);
+    const cd = W * H <= FINE_MAX ? 1 : CELL * S;
     const canvas = document.createElement('canvas');
     canvas.className = 'paper-sheet';
     canvas.width = W;
@@ -793,7 +1020,6 @@
     const mask = document.createElement('canvas');
     mask.width = W;
     mask.height = H;
-    const cd = CELL * S;
     sheet = {
       canvas: canvas,
       ctx: canvas.getContext('2d', { willReadFrequently: true }),
@@ -805,6 +1031,7 @@
       W: W,
       H: H,
       S: S,
+      cd: cd,
       cols: Math.ceil(W / cd),
       rows: Math.ceil(H / cd),
       group: null,
@@ -919,7 +1146,14 @@
       d.moved = true;
     }
     const seg = extendTrail(d.trail, x, y, now);
-    if (!seg || d.mode !== 'tear' || !sheet) {
+    if (!seg) {
+      return;
+    }
+    if (pieces.length) {
+      tearPieces(seg);
+      checkPieces(false);
+    }
+    if (d.mode !== 'tear' || !sheet) {
       return;
     }
     const sx = window.scrollX;
@@ -955,6 +1189,11 @@
         endDrag();
       }
     }
+    if (e.buttons & 1) {
+      last = { x: x, y: y };
+      stepDist = 0;
+      return;
+    }
     if (last) {
       const dx = x - last.x;
       const dy = y - last.y;
@@ -976,9 +1215,9 @@
 
   function onDown(e) {
     last = { x: e.clientX, y: e.clientY };
-    addPaw(e.clientX, e.clientY, CURSOR * 1.4, rand(-0.35, 0.35), 0.6, 1800);
     suppressClick = false;
     if (e.button !== 0 || e.pointerType === 'touch') {
+      addPaw(e.clientX, e.clientY, CURSOR * 1.4, rand(-0.35, 0.35), 0.6, 1800);
       return;
     }
     const target = e.target;
@@ -1003,6 +1242,10 @@
     }
     drag = null;
     d.trail.ended = true;
+    if (!d.moved) {
+      addPaw(d.sx, d.sy, CURSOR * 1.4, rand(-0.35, 0.35), 0.6, 1800);
+    }
+    checkPieces(true);
     if (d.mode === 'tear') {
       suppressClick = true;
       setTimeout(function () {
