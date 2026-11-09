@@ -55,7 +55,6 @@
   }
   const bg = bgCanvas.getContext('2d');
   const fxc = fxCanvas.getContext('2d');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const fx = [];
   const trails = [];
   const pieces = [];
@@ -132,9 +131,6 @@
     bgCanvas.height = Math.round(h * bdpr);
     bg.setTransform(bdpr, 0, 0, bdpr, 0, 0);
     dirty = false;
-    if (reduceMotion.matches) {
-      drawWaves(0);
-    }
   }
 
   function onResize() {
@@ -1081,10 +1077,9 @@
     raf = 0;
     const dt = lastFrame ? Math.min(0.05, (now - lastFrame) / 1000) : 0.016;
     lastFrame = now;
-    const still = reduceMotion.matches;
-    if (pieces.length || (!still && now - lastWave >= 30)) {
+    if (pieces.length || now - lastWave >= 30) {
       lastWave = now;
-      drawWaves(still ? 0 : now);
+      drawWaves(now);
     }
     if (pieces.length) {
       drawPieces(dt);
@@ -1093,11 +1088,7 @@
       renderSheet(sheet);
     }
     drawFx(now);
-    if (!still || fx.length || trails.length || pieces.length) {
-      raf = requestAnimationFrame(frame);
-    } else {
-      lastFrame = 0;
-    }
+    raf = requestAnimationFrame(frame);
   }
 
   function start() {
@@ -1315,12 +1306,6 @@
   window.addEventListener('wheel', onWheel, { passive: true });
   window.addEventListener('resize', onResize);
   document.addEventListener('selectionchange', onSelectionChange);
-  if (reduceMotion.addEventListener) {
-    reduceMotion.addEventListener('change', function () {
-      resize();
-      start();
-    });
-  }
   resize();
   start();
 })();
