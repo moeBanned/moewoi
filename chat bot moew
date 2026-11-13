@@ -1,0 +1,1484 @@
+<style>
+.mc-dock {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9999;
+    width: 66px;
+    height: 66px;
+    animation: mcBob 3s ease-in-out infinite;
+}
+.mc-root.mc-open .mc-dock {
+    animation: none;
+}
+@keyframes mcBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+.mc-fab {
+    position: relative;
+    display: block;
+    width: 66px;
+    height: 66px;
+    margin: 0;
+    padding: 6px;
+    border-radius: 50%;
+    border: 4px solid #fff !important;
+    background: hsl(var(--ec, 220) 45% 26%) !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+.mc-fab:hover {
+    transform: scale(1.08);
+}
+.mc-fab::before {
+    content: "";
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 50%;
+    border: 3px solid hsl(var(--ec, 220) 85% 62%);
+    opacity: 0;
+    pointer-events: none;
+}
+.mc-fab.mc-pulse::before {
+    animation: mcRing 0.75s ease-out;
+}
+@keyframes mcRing {
+    0% { opacity: 0.95; transform: scale(0.92); }
+    100% { opacity: 0; transform: scale(1.5); }
+}
+.mc-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.mc-svg.mc-wob {
+    animation: mcWob 0.5s ease-out;
+}
+@keyframes mcWob {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-9deg) scale(1.12); }
+    60% { transform: rotate(7deg) scale(1.06); }
+    100% { transform: rotate(0deg) scale(1); }
+}
+.mc-fx {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.mc-p {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    margin-left: -9px;
+    font-size: 18px;
+    line-height: 1;
+    opacity: 0;
+    pointer-events: none;
+    animation: mcFloat 1.1s ease-out forwards;
+    will-change: transform, opacity;
+}
+@keyframes mcFloat {
+    0% { opacity: 0; transform: translate(var(--dx, 0px), 0) scale(0.5); }
+    20% { opacity: 1; }
+    100% { opacity: 0; transform: translate(calc(var(--dx, 0px) * 1.6), var(--dy, -60px)) scale(1.1) rotate(var(--rot, 0deg)); }
+}
+.mc-tip {
+    position: fixed;
+    right: 94px;
+    bottom: 34px;
+    z-index: 9999;
+    padding: 8px 14px;
+    background: hsl(var(--hue, 220) 25% 12%);
+    color: #e8eaf0;
+    border: 1px solid hsl(var(--hue, 220) 35% 26%);
+    border-radius: 16px 16px 4px 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+}
+.mc-tip.mc-show {
+    opacity: 1;
+    transform: none;
+}
+.mc-win {
+    position: fixed;
+    right: 16px;
+    bottom: 92px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    width: min(360px, calc(100vw - 32px));
+    height: min(520px, calc(100vh - 120px));
+    overflow: hidden;
+    background: hsl(var(--hue, 220) 28% 8% / 0.98);
+    border: 1px solid hsl(var(--hue, 220) 35% 24%);
+    border-radius: 22px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+    animation: mcOpen 0.25s ease-out;
+}
+.mc-win[hidden] {
+    display: none;
+}
+@keyframes mcOpen {
+    from { opacity: 0; transform: translateY(14px) scale(0.96); }
+    to { opacity: 1; transform: none; }
+}
+.mc-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, hsl(var(--hue, 220) 40% 14%), hsl(calc(var(--hue, 220) + 40) 45% 22%));
+    color: #fff;
+}
+.mc-hface {
+    flex: none;
+    display: block;
+    width: 42px;
+    height: 42px;
+    padding: 3px;
+    background: hsl(var(--hue, 220) 40% 28%);
+    border-radius: 50%;
+}
+.mc-ht {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.2;
+}
+.mc-ht b {
+    display: block;
+    font-size: 16px;
+}
+.mc-ht small {
+    color: #c9cfdc;
+    font-size: 12px;
+}
+.mc-x {
+    flex: none;
+    padding: 4px 8px;
+    background: transparent !important;
+    color: #fff !important;
+    border: 0 !important;
+    font-size: 18px;
+    cursor: pointer;
+}
+.mc-hsay {
+    position: absolute;
+    left: 56px;
+    top: 56px;
+    z-index: 3;
+    padding: 6px 12px;
+    background: hsl(var(--hue, 220) 25% 16%);
+    color: #e8eaf0;
+    border: 1px solid hsl(var(--hue, 220) 35% 28%);
+    border-radius: 14px 14px 14px 4px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(4px);
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+}
+.mc-hsay.mc-show {
+    opacity: 1;
+    transform: none;
+}
+.mc-msgs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 12px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.mc-m {
+    max-width: 84%;
+    padding: 9px 13px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+    animation: mcIn 0.25s ease-out;
+}
+@keyframes mcIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+.mc-me {
+    align-self: flex-end;
+    background: hsl(var(--hue, 220) 55% 36%);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.mc-bot {
+    align-self: flex-start;
+    background: hsl(var(--hue, 220) 22% 14%);
+    color: #e8eaf0;
+    border: 1px solid hsl(var(--hue, 220) 30% 24%);
+    border-bottom-left-radius: 4px;
+}
+.mc-typing {
+    display: flex;
+    gap: 4px;
+    padding: 12px 14px;
+}
+.mc-typing i {
+    width: 7px;
+    height: 7px;
+    background: hsl(var(--hue, 220) 40% 62%);
+    border-radius: 50%;
+    animation: mcCham 1s infinite;
+}
+.mc-typing i:nth-child(2) {
+    animation-delay: 0.15s;
+}
+.mc-typing i:nth-child(3) {
+    animation-delay: 0.3s;
+}
+@keyframes mcCham {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-5px); opacity: 1; }
+}
+.mc-form {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    background: hsl(var(--hue, 220) 24% 11%);
+}
+.mc-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 14px;
+    background: hsl(var(--hue, 220) 20% 14%) !important;
+    color: #e8eaf0 !important;
+    border: 1px solid hsl(var(--hue, 220) 35% 30%) !important;
+    border-radius: 999px;
+    font-size: 16px;
+    outline: none;
+}
+.mc-form input::placeholder {
+    color: #8c93a6;
+}
+.mc-form button {
+    padding: 9px 16px;
+    background: hsl(var(--hue, 220) 55% 38%) !important;
+    color: #fff !important;
+    border: 0 !important;
+    border-radius: 999px;
+    font-size: 15px;
+    cursor: pointer;
+}
+.mc-breath {
+    transform-origin: 50px 98px;
+    animation: mcBreath 4.2s ease-in-out infinite;
+}
+@keyframes mcBreath {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03, 1.035); }
+}
+.mc-act {
+    transform-origin: 50px 80px;
+}
+.mc-look {
+    transform: translateX(var(--lx, 0px));
+    transition: transform 0.28s ease;
+}
+.mc-eyes {
+    transform-origin: 50px 56px;
+}
+.mc-blink .mc-eyes {
+    animation: mcBlink 0.2s ease-in-out;
+}
+@keyframes mcBlink {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.08); }
+}
+.mc-earL,
+.mc-earLi {
+    transform-origin: 30px 38px;
+}
+.mc-earR,
+.mc-earRi {
+    transform-origin: 70px 38px;
+}
+.mc-twL .mc-earL,
+.mc-twL .mc-earLi {
+    animation: mcEarL 0.4s ease-in-out;
+}
+.mc-twR .mc-earR,
+.mc-twR .mc-earRi {
+    animation: mcEarR 0.4s ease-in-out;
+}
+@keyframes mcEarL {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(-14deg); }
+    60% { transform: rotate(5deg); }
+}
+@keyframes mcEarR {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(14deg); }
+    60% { transform: rotate(-5deg); }
+}
+.mc-whisk {
+    transform-origin: 50px 64px;
+}
+.mc-twW .mc-whisk {
+    animation: mcWhisk 0.5s ease-in-out;
+}
+@keyframes mcWhisk {
+    0%, 100% { transform: scaleX(1) rotate(0deg); }
+    30% { transform: scaleX(1.06) rotate(2deg); }
+    60% { transform: scaleX(0.96) rotate(-2deg); }
+}
+.mc-tiltI .mc-act {
+    animation: mcTiltIdle 1.3s ease-in-out;
+}
+@keyframes mcTiltIdle {
+    0%, 100% { transform: rotate(0deg); }
+    35%, 65% { transform: rotate(-6deg) translateY(1px); }
+}
+.mx-happy .mc-arcs path,
+.mx-sleepy .mc-arcs path,
+.mx-shy .mc-arcs path,
+.mx-yawn .mc-arcs path,
+.mx-wink .mc-wk path,
+.mx-tongue .mc-arcs2 path,
+.mx-smug .mc-smirk path {
+    stroke-dasharray: 1 2;
+    animation: mcDraw 0.35s ease-out both;
+}
+.mx-wink .mc-wk path {
+    animation-delay: 0.22s;
+}
+@keyframes mcDraw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+}
+.mx-happy .mc-act {
+    animation: mcHop 0.45s ease-out 2;
+}
+.mx-happy .mc-mouth {
+    transform-origin: 50px 71px;
+    animation: mcLaugh 0.4s ease-in-out 3;
+}
+@keyframes mcHop {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+}
+@keyframes mcLaugh {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.55); }
+}
+.mx-wink .mc-act {
+    animation: mcTilt 0.55s ease-in-out both;
+}
+@keyframes mcTilt {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-7deg); }
+    100% { transform: rotate(-5deg); }
+}
+.mx-wink .mc-wopen {
+    opacity: 0;
+    animation: mcFadeOut 0.12s 0.2s both;
+}
+@keyframes mcFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+.mx-love .mc-heart {
+    transform-origin: 36px 54px;
+    animation: mcBeat 0.7s ease-in-out 4;
+}
+.mx-love .mc-heart.h2 {
+    transform-origin: 64px 54px;
+    animation-delay: 0.12s;
+}
+@keyframes mcBeat {
+    0%, 100% { transform: scale(1); }
+    40% { transform: scale(1.28); }
+}
+.mx-love .mc-act {
+    animation: mcSway 1s ease-in-out 2;
+}
+@keyframes mcSway {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(4deg); }
+    75% { transform: rotate(-4deg); }
+}
+.mx-surprised .mc-eyes {
+    animation: mcPop 0.38s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+@keyframes mcPop {
+    from { transform: scale(0.45); }
+    to { transform: scale(1); }
+}
+.mx-surprised .mc-brows {
+    animation: mcRise 0.3s ease-out both;
+}
+@keyframes mcRise {
+    from { transform: translateY(5px); }
+    to { transform: translateY(-2px); }
+}
+.mx-surprised .mc-act {
+    animation: mcJump 0.36s ease-out;
+}
+@keyframes mcJump {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-8px); }
+}
+.mx-surprised .mc-mouth {
+    transform-origin: 50px 70px;
+    animation: mcPop 0.3s ease-out both;
+}
+.mx-sleepy .mc-act {
+    animation: mcNod 1.5s ease-in-out 2;
+}
+@keyframes mcNod {
+    0%, 100% { transform: rotate(0deg); }
+    45% { transform: rotate(7deg) translateY(2px); }
+}
+.mc-z {
+    opacity: 0;
+}
+.mx-sleepy .mc-z {
+    animation: mcZ 1.8s ease-out 3;
+}
+.mx-sleepy .mc-z.z2 {
+    animation-delay: 0.7s;
+}
+@keyframes mcZ {
+    0% { opacity: 0; transform: translate(0, 0); }
+    25% { opacity: 1; }
+    100% { opacity: 0; transform: translate(7px, -14px); }
+}
+.mx-angry .mc-act {
+    animation: mcShake 0.45s linear;
+}
+@keyframes mcShake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-2.5px); }
+    30% { transform: translateX(2.5px); }
+    45% { transform: translateX(-2.5px); }
+    60% { transform: translateX(2.5px); }
+    75% { transform: translateX(-1.5px); }
+}
+.mx-angry .mc-flush {
+    animation: mcFlush 0.5s ease-in-out 3;
+}
+@keyframes mcFlush {
+    0%, 100% { opacity: 0.12; }
+    50% { opacity: 0.42; }
+}
+.mx-angry .mc-brows {
+    animation: mcFrown 0.3s ease-out both;
+}
+@keyframes mcFrown {
+    from { transform: translateY(-3px); }
+    to { transform: translateY(2px); }
+}
+.mx-cool .mc-glasses {
+    animation: mcDrop 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes mcDrop {
+    from { transform: translateY(-16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.mc-gl {
+    opacity: 0;
+}
+.mx-cool .mc-gl {
+    animation: mcGlint 1s 0.6s ease-in-out 2;
+}
+@keyframes mcGlint {
+    0% { opacity: 0; transform: translateX(0); }
+    40% { opacity: 0.6; }
+    100% { opacity: 0; transform: translateX(15px); }
+}
+.mx-cool .mc-act {
+    animation: mcHop 0.5s ease-out;
+}
+.mx-sad .mc-tear {
+    animation: mcTear 1.3s ease-in 3 backwards;
+}
+.mx-sad .mc-tear.t2 {
+    animation-delay: 0.65s;
+}
+@keyframes mcTear {
+    0% { opacity: 0; transform: translateY(-2px); }
+    20% { opacity: 0.95; }
+    100% { opacity: 0; transform: translateY(11px); }
+}
+.mx-sad .mc-act {
+    animation: mcDroop 0.7s ease-out both;
+}
+@keyframes mcDroop {
+    from { transform: translateY(0); }
+    to { transform: translateY(2.5px) rotate(-2deg); }
+}
+.mx-tongue .mc-tongue {
+    transform-origin: 50px 74px;
+    animation: mcWig 0.32s ease-in-out 6 alternate;
+}
+@keyframes mcWig {
+    from { transform: rotate(-14deg); }
+    to { transform: rotate(14deg); }
+}
+.mx-tongue .mc-act {
+    animation: mcShakeHead 0.4s ease-in-out 2;
+}
+@keyframes mcShakeHead {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    75% { transform: rotate(-5deg); }
+}
+.mx-smug .mc-browR {
+    animation: mcBrowUp 0.35s ease-out both;
+}
+@keyframes mcBrowUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-4px); }
+}
+.mx-smug .mc-act {
+    animation: mcTiltS 0.6s ease-in-out both;
+}
+@keyframes mcTiltS {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-5deg); }
+}
+.mx-starry .mc-star {
+    transform-origin: 36px 55px;
+    animation: mcTwinkle 0.5s ease-in-out 5 alternate;
+}
+.mx-starry .mc-star.s2 {
+    transform-origin: 64px 55px;
+    animation-delay: 0.15s;
+}
+@keyframes mcTwinkle {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1.25) rotate(18deg); }
+}
+.mx-starry .mc-act {
+    animation: mcHop 0.45s ease-out 2;
+}
+.mx-shy .mc-blush {
+    animation: mcBlush 0.6s ease-in-out 3 alternate;
+}
+@keyframes mcBlush {
+    from { opacity: 0.55; }
+    to { opacity: 1; }
+}
+.mx-shy .mc-act {
+    animation: mcShy 0.6s ease-out both;
+}
+@keyframes mcShy {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-5deg) translate(-1px, 1px); }
+}
+.mx-yawn .mc-yawn {
+    transform-origin: 50px 68px;
+    animation: mcYawn 1.5s ease-in-out both;
+}
+@keyframes mcYawn {
+    0% { transform: scaleY(0.1); }
+    35%, 65% { transform: scaleY(1); }
+    100% { transform: scaleY(0.1); }
+}
+.mx-yawn .mc-act {
+    animation: mcStretch 1.5s ease-in-out;
+}
+@keyframes mcStretch {
+    0%, 100% { transform: translateY(0) scale(1); }
+    40%, 60% { transform: translateY(-3px) scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mc-dock,
+    .mc-win,
+    .mc-m,
+    .mc-typing i,
+    .mc-fab.mc-pulse::before,
+    .mc-svg,
+    .mc-svg * {
+        animation: none !important;
+    }
+}
+</style>
+
+<div class="mc-root" id="mcRoot">
+    <div class="mc-tip" id="mcTip">Meo~ nhắn mình nè!</div>
+    <div class="mc-dock" id="mcDock">
+        <button class="mc-fab" id="mcFab" type="button" aria-label="Mở khung chat với Mều"></button>
+        <span class="mc-fx" id="mcFx"></span>
+    </div>
+    <div class="mc-win" id="mcWin" role="dialog" aria-label="Chat với Mều" hidden>
+        <div class="mc-head">
+            <span class="mc-hface" id="mcHface"></span>
+            <div class="mc-ht"><b>Mều</b><small>bé mèo trực web</small></div>
+            <button class="mc-x" id="mcX" type="button" aria-label="Đóng">✕</button>
+        </div>
+        <div class="mc-hsay" id="mcHsay"></div>
+        <div class="mc-msgs" id="mcMsgs" aria-live="polite"></div>
+        <form class="mc-form" id="mcForm">
+            <input id="mcIn" type="text" placeholder="Nhắn gì cho Mều đi..." autocomplete="off" maxlength="200">
+            <button type="submit">Gửi</button>
+        </form>
+    </div>
+</div>
+
+<script>
+(function () {
+    if (window.__mcInit) {
+        return;
+    }
+    var root = document.getElementById('mcRoot');
+    if (!root) {
+        return;
+    }
+    window.__mcInit = true;
+
+    var fab = document.getElementById('mcFab');
+    var fx = document.getElementById('mcFx');
+    var tip = document.getElementById('mcTip');
+    var win = document.getElementById('mcWin');
+    var hface = document.getElementById('mcHface');
+    var hsay = document.getElementById('mcHsay');
+    var msgs = document.getElementById('mcMsgs');
+    var form = document.getElementById('mcForm');
+    var input = document.getElementById('mcIn');
+    var closeBtn = document.getElementById('mcX');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var D = '#2b2b2b';
+
+    function arc(d, w, c) {
+        return '<path pathLength="1" d="' + d + '" fill="none" stroke="' + (c || D) + '" stroke-width="' + (w || 3.6) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+    }
+
+    function dot(x, y, rx, ry) {
+        return '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + ry + '" fill="' + D + '"/>';
+    }
+
+    function shine(x, y) {
+        return '<circle cx="' + x + '" cy="' + y + '" r="1.5" fill="#fff"/>';
+    }
+
+    function grp(cls, inner) {
+        return '<g class="' + cls + '">' + inner + '</g>';
+    }
+
+    function eyes(inner) {
+        return '<g class="mc-look"><g class="mc-eyes">' + inner + '</g></g>';
+    }
+
+    function bigEye(x) {
+        return '<circle cx="' + x + '" cy="56" r="7.5" fill="#fff" stroke="' + D + '" stroke-width="2.4"/><circle cx="' + x + '" cy="56" r="3.2" fill="' + D + '"/>';
+    }
+
+    var CHK = '<ellipse cx="25" cy="67" rx="6" ry="3.6" fill="#f9b8c6" opacity=".85"/><ellipse cx="75" cy="67" rx="6" ry="3.6" fill="#f9b8c6" opacity=".85"/>';
+    var OPEN_MOUTH = '<path d="M41 71 Q50 85 59 71 Z" fill="#e8657f" stroke="#8a3a4b" stroke-width="2" stroke-linejoin="round"/>';
+    var H36 = '<path d="M36 62 C27 56 27 47 33 47 C35 47 36 49 36 50 C36 49 37 47 39 47 C45 47 45 56 36 62 Z" fill="#ff4d79"/>';
+    var H64 = '<path d="M64 62 C55 56 55 47 61 47 C63 47 64 49 64 50 C64 49 65 47 67 47 C73 47 73 56 64 62 Z" fill="#ff4d79"/>';
+    var S36 = '<path d="M36 46 L38.6 52.6 L45.6 53 L40.2 57.4 L42 64.2 L36 60.4 L30 64.2 L31.8 57.4 L26.4 53 L33.4 52.6 Z" fill="#ffd84d" stroke="#e0a800" stroke-width="1"/>';
+    var S64 = '<path d="M64 46 L66.6 52.6 L73.6 53 L68.2 57.4 L70 64.2 L64 60.4 L58 64.2 L59.8 57.4 L54.4 53 L61.4 52.6 Z" fill="#ffd84d" stroke="#e0a800" stroke-width="1"/>';
+
+    var BASE = '<g class="mc-earL"><path d="M16 42 L20 8 L46 25 Z" fill="#fff" stroke="#bfb5a5" stroke-width="3" stroke-linejoin="round"/></g>' +
+        '<g class="mc-earR"><path d="M84 42 L80 8 L54 25 Z" fill="#fff" stroke="#bfb5a5" stroke-width="3" stroke-linejoin="round"/></g>' +
+        '<ellipse cx="50" cy="57" rx="38" ry="32" fill="#fff" stroke="#bfb5a5" stroke-width="3"/>' +
+        '<g class="mc-earLi"><path d="M24 33 L25 18 L36 26 Z" fill="#f6c6cf"/></g>' +
+        '<g class="mc-earRi"><path d="M76 33 L75 18 L64 26 Z" fill="#f6c6cf"/></g>' +
+        '<g class="mc-whisk"><path d="M13 59 L28 61 M13 67 L28 65 M87 59 L72 61 M87 67 L72 65" stroke="#bfb5a5" stroke-width="1.8" stroke-linecap="round" fill="none"/></g>' +
+        '<path d="M45 63 L55 63 L50 69 Z" fill="#f2a1b0" stroke="#f2a1b0" stroke-width="1.5" stroke-linejoin="round"/>';
+
+    var EXPR = {
+        neutral: { h: 220, p: [], f: eyes(dot(36, 56, 3.6, 4.6) + dot(64, 56, 3.6, 4.6) + shine(37.2, 54.4) + shine(65.2, 54.4)) + grp('mc-mouth', arc('M44 72 Q47 76 50 72 Q53 76 56 72', 2, '#8a6f66')) },
+        happy: { h: 140, p: ['✨', '🎵', '🌟'], f: grp('mc-arcs', arc('M29 57 Q36 47 43 57') + arc('M57 57 Q64 47 71 57')) + grp('mc-mouth', OPEN_MOUTH) + CHK },
+        wink: { h: 290, p: ['💫', '✨', '💫'], f: eyes(dot(36, 56, 4, 5.4) + shine(37.5, 53.8)) + grp('mc-wopen', dot(64, 56, 4, 5.4) + shine(65.5, 53.8)) + grp('mc-wk', arc('M57 57 Q64 49 71 57')) + grp('mc-mouth', arc('M42 71 Q50 80 58 71', 2.6, '#8a3a4b')) + CHK },
+        love: { h: 340, p: ['❤️', '💖', '💕'], f: grp('mc-heart', H36) + grp('mc-heart h2', H64) + grp('mc-mouth', '<path d="M43 71 Q50 81 57 71 Z" fill="#e8657f"/>') + CHK },
+        surprised: { h: 50, p: ['❗', '⚡', '✨'], f: grp('mc-brows', arc('M28 43 Q36 37 44 43', 3) + arc('M56 43 Q64 37 72 43', 3)) + '<g class="mc-eyes">' + bigEye(36) + bigEye(64) + '</g>' + grp('mc-mouth', '<ellipse cx="50" cy="76" rx="4.4" ry="6" fill="#8a3a4b"/>') },
+        sleepy: { h: 235, p: ['💤', '💤', '🌙'], f: grp('mc-arcs', arc('M29 56 Q36 62 43 56') + arc('M57 56 Q64 62 71 56')) + grp('mc-mouth', arc('M46 73 Q50 76 54 73', 2.4, '#8a6f66')) + CHK + '<text class="mc-z z1" x="86" y="26" font-size="12" font-weight="700" fill="#9fb4ff">z</text><text class="mc-z z2" x="90" y="20" font-size="9" font-weight="700" fill="#9fb4ff">z</text>' },
+        angry: { h: 5, p: ['💢', '🔥', '💢'], f: '<ellipse class="mc-flush" cx="50" cy="57" rx="38" ry="32" fill="#ff3b30" opacity=".2"/>' + grp('mc-brows', arc('M27 44 L44 52', 4.4, '#b3261e') + arc('M73 44 L56 52', 4.4, '#b3261e')) + eyes(dot(37, 58, 3.8, 4.2) + dot(63, 58, 3.8, 4.2)) + grp('mc-mouth', arc('M41 77 Q50 68 59 77', 2.8, '#8a3a4b')) },
+        cool: { h: 195, p: ['✨', '💎', '✨'], f: grp('mc-glasses', '<rect x="25" y="49" width="22" height="13" rx="5" fill="#15151d"/><rect x="53" y="49" width="22" height="13" rx="5" fill="#15151d"/><rect x="47" y="53" width="6" height="3" fill="#15151d"/><path d="M29 53 L36 53 M57 53 L64 53" stroke="#fff" stroke-width="1.6" opacity=".55" stroke-linecap="round"/><path class="mc-gl" d="M27 50 L32 50 L29 61 L24 61 Z" fill="#fff"/><path class="mc-gl" d="M55 50 L60 50 L57 61 L52 61 Z" fill="#fff"/>') + grp('mc-mouth', arc('M42 72 Q51 78 59 69', 2.6, '#8a3a4b')) },
+        sad: { h: 210, p: ['💧', '💧', '💙'], f: eyes(dot(36, 57, 5, 6.4) + dot(64, 57, 5, 6.4) + '<circle cx="38" cy="54.5" r="1.9" fill="#fff"/><circle cx="66" cy="54.5" r="1.9" fill="#fff"/><circle cx="34.5" cy="59.5" r="1.1" fill="#fff"/><circle cx="62.5" cy="59.5" r="1.1" fill="#fff"/>') + grp('mc-brows', arc('M28 49 L43 44', 3) + arc('M72 49 L57 44', 3)) + grp('mc-mouth', arc('M43 77 Q50 70 57 77', 2.6, '#8a3a4b')) + '<path class="mc-tear" d="M30 62 Q26.5 68 30 71 Q33.5 68 30 62 Z" fill="#6ec6ff"/><path class="mc-tear t2" d="M70 62 Q66.5 68 70 71 Q73.5 68 70 62 Z" fill="#6ec6ff"/>' },
+        tongue: { h: 25, p: ['🎉', '🍬', '🎈'], f: grp('mc-arcs2', arc('M30 52 L41 56 L30 60', 3.4) + arc('M70 52 L59 56 L70 60', 3.4)) + grp('mc-mouth', OPEN_MOUTH) + grp('mc-tongue', '<ellipse cx="50" cy="78" rx="4.6" ry="5" fill="#ff7aa2"/>') + CHK },
+        smug: { h: 265, p: ['💜', '✨', '😏'], f: eyes('<path d="M30 56 A6 6 0 0 0 42 56 Z" fill="#2b2b2b"/><path d="M58 56 A6 6 0 0 0 70 56 Z" fill="#2b2b2b"/>' + arc('M29 56 L43 56', 2.6) + arc('M57 56 L71 56', 2.6)) + grp('mc-browL', arc('M28 47 Q36 43 44 47', 3)) + grp('mc-browR', arc('M56 43 Q64 40 72 45', 3)) + grp('mc-smirk', arc('M42 72 Q52 79 60 68', 2.6, '#8a3a4b')) + CHK },
+        starry: { h: 45, p: ['⭐', '🌟', '✨'], f: grp('mc-star', S36) + grp('mc-star s2', S64) + grp('mc-mouth', OPEN_MOUTH) + CHK },
+        shy: { h: 350, p: ['🌸', '💗', '🌸'], f: grp('mc-arcs', arc('M29 55 Q36 61 43 55') + arc('M57 55 Q64 61 71 55')) + grp('mc-mouth', arc('M44 73 Q47 77 50 73 Q53 77 56 73', 2.2, '#8a6f66')) + grp('mc-blush', '<ellipse cx="25" cy="67" rx="7" ry="4.2" fill="#ff9db4" opacity=".95"/><ellipse cx="75" cy="67" rx="7" ry="4.2" fill="#ff9db4" opacity=".95"/>') },
+        yawn: { h: 235, p: ['💤', '😪'], f: grp('mc-arcs', arc('M29 55 Q36 61 43 55') + arc('M57 55 Q64 61 71 55')) + grp('mc-yawn', '<ellipse cx="50" cy="76" rx="7" ry="9" fill="#8a3a4b"/><ellipse cx="50" cy="82" rx="4.4" ry="3.2" fill="#ff7aa2"/>') + CHK }
+    };
+    var POOL_EX = ['happy', 'wink', 'love', 'surprised', 'sleepy', 'angry', 'cool', 'sad', 'tongue', 'smug', 'starry', 'shy', 'yawn'];
+    var IDLE_CLS = ['mc-blink', 'mc-twL', 'mc-twR', 'mc-twW', 'mc-tiltI'];
+
+    function faceHtml() {
+        return '<svg class="mc-svg" viewBox="0 0 100 100" aria-hidden="true"><g class="mc-breath"><g class="mc-act">' + BASE + '<g class="mc-feat"></g></g></g></svg>';
+    }
+
+    function retrigger(el, cls) {
+        el.classList.remove(cls);
+        el.getBoundingClientRect();
+        el.classList.add(cls);
+    }
+
+    function setFace(svg, id) {
+        var g = svg.querySelector('.mc-feat');
+        var list = svg.classList;
+        var i;
+        for (i = list.length - 1; i >= 0; i--) {
+            if (list[i].indexOf('mx-') === 0) {
+                list.remove(list[i]);
+            }
+        }
+        IDLE_CLS.forEach(function (c) {
+            list.remove(c);
+        });
+        svg.getBoundingClientRect();
+        g.innerHTML = (EXPR[id] || EXPR.neutral).f;
+        list.add('mx-' + id);
+        svg.__ex = id;
+    }
+
+    function rnd(a, b) {
+        return a + Math.floor(Math.random() * (b - a + 1));
+    }
+
+    function pick(a) {
+        return a[Math.floor(Math.random() * a.length)];
+    }
+
+    fab.innerHTML = faceHtml();
+    hface.innerHTML = faceHtml();
+    var fabSvg = fab.querySelector('.mc-svg');
+    var hSvg = hface.querySelector('.mc-svg');
+    setFace(fabSvg, 'neutral');
+    setFace(hSvg, 'neutral');
+    fab.style.setProperty('--ec', 220);
+
+    var lastEx = '';
+    var exT = 0;
+    var revertT = null;
+    var moodT = null;
+    var tipT = null;
+    var sayT = null;
+    var hovering = false;
+    var lastType = 0;
+    var queued = 0;
+
+    function burst(list) {
+        while (fx.children.length > 6) {
+            fx.removeChild(fx.firstChild);
+        }
+        for (var i = 0; i < 3; i++) {
+            var s = document.createElement('span');
+            s.className = 'mc-p';
+            s.textContent = list[i % list.length];
+            s.style.setProperty('--dx', rnd(-26, 26) + 'px');
+            s.style.setProperty('--dy', -rnd(46, 82) + 'px');
+            s.style.setProperty('--rot', rnd(-30, 30) + 'deg');
+            s.style.animationDelay = (i * 90) + 'ms';
+            s.addEventListener('animationend', function () {
+                if (this.parentNode) {
+                    this.parentNode.removeChild(this);
+                }
+            });
+            fx.appendChild(s);
+        }
+    }
+
+    function toNeutral() {
+        setFace(fabSvg, 'neutral');
+        fab.style.setProperty('--ec', 220);
+    }
+
+    function showFab(id, withFx, holdMs) {
+        var e = EXPR[id];
+        setFace(fabSvg, id);
+        fab.style.setProperty('--ec', e.h);
+        if (!reduce) {
+            retrigger(fab, 'mc-pulse');
+            retrigger(fabSvg, 'mc-wob');
+            if (withFx && e.p.length) {
+                burst(e.p);
+            }
+        }
+        clearTimeout(revertT);
+        if (holdMs) {
+            revertT = setTimeout(toNeutral, holdMs);
+        }
+    }
+
+    function mood(id) {
+        setFace(hSvg, id);
+        if (!reduce) {
+            retrigger(hSvg, 'mc-wob');
+        }
+        clearTimeout(moodT);
+        if (id !== 'neutral') {
+            moodT = setTimeout(function () {
+                setFace(hSvg, 'neutral');
+            }, 4200);
+        }
+    }
+
+    fab.addEventListener('pointerenter', function () {
+        hovering = true;
+        var now = performance.now();
+        if (document.hidden || now - exT < 450) {
+            return;
+        }
+        exT = now;
+        var id;
+        do {
+            id = pick(POOL_EX);
+        } while (id === lastEx);
+        lastEx = id;
+        showFab(id, true, 0);
+    });
+
+    fab.addEventListener('pointerleave', function () {
+        hovering = false;
+        clearTimeout(revertT);
+        revertT = setTimeout(toNeutral, 1600);
+    });
+
+    function quiet() {
+        return !document.hidden && !hovering && queued === 0 && performance.now() - lastType > 6000;
+    }
+
+    function idleOne(svg) {
+        if (svg.__ex && svg.__ex !== 'neutral') {
+            return;
+        }
+        var a = pick(['blink', 'blink', 'blink', 'earL', 'earR', 'whisk', 'tilt', 'look']);
+        if (a === 'blink') {
+            retrigger(svg, 'mc-blink');
+            if (Math.random() < 0.25) {
+                setTimeout(function () {
+                    retrigger(svg, 'mc-blink');
+                }, 300);
+            }
+        } else if (a === 'earL') {
+            retrigger(svg, 'mc-twL');
+        } else if (a === 'earR') {
+            retrigger(svg, 'mc-twR');
+        } else if (a === 'whisk') {
+            retrigger(svg, 'mc-twW');
+        } else if (a === 'tilt') {
+            retrigger(svg, 'mc-tiltI');
+        } else {
+            svg.style.setProperty('--lx', pick(['-2.5px', '2.5px']));
+            setTimeout(function () {
+                svg.style.setProperty('--lx', '0px');
+            }, rnd(700, 1400));
+        }
+    }
+
+    function loop(fn, min, max) {
+        setTimeout(function () {
+            fn();
+            loop(fn, min, max);
+        }, rnd(min, max));
+    }
+
+    function autoExpress() {
+        if (!quiet()) {
+            return;
+        }
+        var id;
+        do {
+            id = pick(POOL_EX);
+        } while (id === lastEx);
+        lastEx = id;
+        if (win.hidden) {
+            showFab(id, true, 2800);
+        } else {
+            mood(id);
+        }
+    }
+
+    var MEOWS = ['moew~', 'meo~', 'moeow?', 'meow meow~', 'mrrrow~', 'moew moew~', 'meooow~'];
+
+    function meow() {
+        if (!quiet()) {
+            return;
+        }
+        var txt = pick(MEOWS);
+        var id = pick(['happy', 'wink', 'tongue', 'love', 'shy', 'starry']);
+        if (win.hidden) {
+            tip.textContent = txt;
+            tip.classList.add('mc-show');
+            clearTimeout(tipT);
+            tipT = setTimeout(function () {
+                tip.classList.remove('mc-show');
+            }, 2800);
+            showFab(id, true, 2800);
+        } else {
+            hsay.textContent = txt;
+            hsay.classList.add('mc-show');
+            clearTimeout(sayT);
+            sayT = setTimeout(function () {
+                hsay.classList.remove('mc-show');
+            }, 2600);
+            mood(id);
+        }
+    }
+
+    if (!reduce) {
+        loop(function () {
+            if (document.hidden || hovering) {
+                return;
+            }
+            idleOne(win.hidden ? fabSvg : hSvg);
+        }, 1700, 4300);
+    }
+    loop(autoExpress, 13000, 26000);
+    loop(meow, 40000, 75000);
+
+    function norm(s) {
+        return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function has(t, p) {
+        return (' ' + t + ' ').indexOf(' ' + p + ' ') !== -1;
+    }
+
+    function cap(s) {
+        return s.replace(/(^|\s)(\S)/g, function (m, a, b) {
+            return a + b.toUpperCase();
+        });
+    }
+
+    var ctx = { name: '', last: '', unknown: 0, pending: null, lastIdx: {}, lastRiddle: -1 };
+
+    function fill(s) {
+        return s.replace(/\{name\}/g, ctx.name || 'bạn');
+    }
+
+    function mk(t, m) {
+        return { t: fill(t), m: m || 'happy' };
+    }
+
+    function calc(expr) {
+        var tk = expr.match(/\d+(?:\.\d+)?|[()+\-*\/^%]/g);
+        if (!tk) {
+            return NaN;
+        }
+        var prec = { '+': 1, '-': 1, '*': 2, '/': 2, '%': 2, 'u': 3, '^': 4 };
+        var right = { '^': true, 'u': true };
+        var out = [];
+        var ops = [];
+        var prev = null;
+        var i;
+        for (i = 0; i < tk.length; i++) {
+            var x = tk[i];
+            if (/^\d/.test(x)) {
+                out.push(parseFloat(x));
+                prev = 'n';
+            } else if (x === '(') {
+                ops.push(x);
+                prev = '(';
+            } else if (x === ')') {
+                while (ops.length && ops[ops.length - 1] !== '(') {
+                    out.push(ops.pop());
+                }
+                if (!ops.length) {
+                    return NaN;
+                }
+                ops.pop();
+                prev = 'n';
+            } else {
+                var o = x;
+                if (prev === null || prev === '(' || prev === 'o') {
+                    if (x === '-') {
+                        o = 'u';
+                    } else if (x === '+') {
+                        continue;
+                    }
+                }
+                while (ops.length) {
+                    var top = ops[ops.length - 1];
+                    if (top === '(') {
+                        break;
+                    }
+                    if (prec[top] > prec[o] || (prec[top] === prec[o] && !right[o])) {
+                        out.push(ops.pop());
+                    } else {
+                        break;
+                    }
+                }
+                ops.push(o);
+                prev = 'o';
+            }
+        }
+        while (ops.length) {
+            var p = ops.pop();
+            if (p === '(') {
+                return NaN;
+            }
+            out.push(p);
+        }
+        var st = [];
+        for (i = 0; i < out.length; i++) {
+            var q = out[i];
+            if (typeof q === 'number') {
+                st.push(q);
+            } else if (q === 'u') {
+                if (!st.length) {
+                    return NaN;
+                }
+                st.push(-st.pop());
+            } else {
+                if (st.length < 2) {
+                    return NaN;
+                }
+                var b = st.pop();
+                var a = st.pop();
+                if (q === '+') {
+                    st.push(a + b);
+                } else if (q === '-') {
+                    st.push(a - b);
+                } else if (q === '*') {
+                    st.push(a * b);
+                } else if (q === '/') {
+                    st.push(a / b);
+                } else if (q === '%') {
+                    st.push(a % b);
+                } else {
+                    st.push(Math.pow(a, b));
+                }
+            }
+        }
+        return st.length === 1 ? st[0] : NaN;
+    }
+
+    function tryMath(raw) {
+        var s = raw.toLowerCase();
+        s = s.replace(/(?:bằng|bang)\s*(?:mấy|may|bao nhiêu|bao nhieu)(?:\s*vậy|\s*vay)?/g, ' ');
+        s = s.replace(/(?:tính|tinh|kết quả|ket qua|bao nhiêu|bao nhieu)/g, ' ');
+        s = s.replace(/\s+(?:cộng|cong)\s+/g, '+').replace(/\s+(?:trừ|tru)\s+/g, '-').replace(/\s+(?:nhân|nhan)\s+/g, '*').replace(/\s+(?:chia)\s+/g, '/');
+        s = s.replace(/(\d)\s*[x×]\s*(?=[\d(])/g, '$1*').replace(/÷/g, '/').replace(/[=?]/g, ' ');
+        s = s.replace(/(\d),(\d)/g, '$1.$2').trim();
+        if (/\d+\s*\/\s*\d+\s*\/\s*\d+/.test(s)) {
+            return null;
+        }
+        if (!/^[\d\s+\-*\/^().%]+$/.test(s) || !/\d/.test(s) || !/[+\-*\/^%]/.test(s.replace(/^\s*-/, ''))) {
+            return null;
+        }
+        var v = calc(s);
+        if (isNaN(v)) {
+            return 'Phép tính này mình chưa tính được 😿 Bạn kiểm tra lại giúp mình nhé.';
+        }
+        if (!isFinite(v)) {
+            return 'Kết quả vô cực luôn, to quá mèo đếm không nổi 🙀 (hoặc bạn đang chia cho 0 đó!)';
+        }
+        return s.replace(/\s+/g, '') + ' = ' + (Math.round(v * 1e8) / 1e8) + ' 🧮';
+    }
+
+    var JOKES = [
+        'Tại sao máy tính sợ mèo? Vì mèo cứ đòi "bấm chuột" của nó hoài! 🐭',
+        'Mèo thích ngôn ngữ lập trình nào nhất? Purr-thon! 😹',
+        'Mèo nhảy lên bàn phím gõ: "asdkjfhsd". Chủ hỏi: "Cậu viết code à?" Mèo đáp: "Đây là code sạch nhất tôi từng viết, không có bug vì chẳng ai đọc nổi!"',
+        'Sáng nào mèo cũng đánh thức chủ lúc 5 giờ. Không phải báo thức đâu, là "báo đói" đó! ⏰🐟',
+        'Mèo làm rơi cái ly xuống đất rồi nhìn bạn như muốn nói: "Trọng lực mới là thủ phạm."',
+        'Mèo có chín mạng nên thi trượt 8 lần vẫn còn lần cuối để làm lại. Chiến thuật hoàn hảo! 📚',
+        'Hỏi: Tại sao mèo ngồi lên laptop của bạn? Đáp: Vì chỗ đó ấm hơn, và vì bạn đang làm việc, mà mèo không chịu được cảnh người làm việc! 💻',
+        'Capybara hỏi: "Sao ai cũng vội vậy?" Mình ngồi yên mà suối vẫn chảy qua đây thôi mà. 🌊'
+    ];
+
+    var FACTS = [
+        'Mèo ngủ khoảng 12 đến 16 tiếng mỗi ngày, mèo con và mèo già còn ngủ nhiều hơn nữa 😴',
+        'Mỗi chú mèo có dấu mũi riêng, giống như vân tay của người vậy 👃',
+        'Râu mèo giúp nó cảm nhận khoảng cách và luồng gió, nên tuyệt đối đừng cắt râu mèo nha.',
+        'Mèo không nếm được vị ngọt, nên chúng chẳng thèm bánh kẹo như mình đâu 🍬',
+        'Tiếng "meo" của mèo trưởng thành chủ yếu là để nói chuyện với con người, mèo với nhau ít meo hơn 🗣️',
+        'Mèo có thể nhảy cao khoảng gấp 5 lần chiều cao cơ thể của nó 🦘',
+        'Mèo gừ gừ không chỉ khi vui, đôi khi chúng gừ gừ để tự trấn an lúc căng thẳng đó.'
+    ];
+
+    var QUOTES = [
+        'Từng bước nhỏ cũng là đang tiến lên. Cứ làm một việc, rồi tới việc kế tiếp 💪',
+        'Bạn không cần giỏi nhất, chỉ cần tốt hơn hôm qua một chút thôi 🌱',
+        'Học 25 phút, nghỉ 5 phút, rồi lặp lại. Mèo ngủ trưa còn có lịch mà 🐱',
+        'Sai là một cách học. Chỉ cần đừng bỏ cuộc là được ✨'
+    ];
+
+    var RIDDLES = [
+        { q: 'Con gì ăn cá, ngủ cả ngày, thích phơi nắng và kêu "meo meo"?', a: ['meo', 'con meo'], rev: 'con mèo (dễ ợt đúng không? 😸)' },
+        { q: 'Cái gì có 4 chân nhưng không biết đi, lúc nào cũng bị người ta ngồi lên?', a: ['ghe', 'cai ghe'], rev: 'cái ghế' },
+        { q: 'Cái gì càng lấy đi càng lớn?', a: ['ho', 'lo', 'cai ho', 'cai lo'], rev: 'cái hố' },
+        { q: 'Cái gì là của bạn nhưng người khác lại dùng nhiều hơn bạn?', a: ['ten', 'ten cua ban'], rev: 'tên của bạn' },
+        { q: 'Cái gì có một mắt nhưng không nhìn thấy gì?', a: ['kim', 'cay kim', 'kim khau'], rev: 'cây kim' },
+        { q: 'Có 3 quả táo, bạn lấy đi 2 quả. Bạn đang có mấy quả táo?', a: ['2', 'hai'], rev: '2 quả (vì bạn đã lấy 2 quả rồi!)' },
+        { q: 'Cái gì đi lên mà không bao giờ đi xuống?', a: ['tuoi', 'tuoi tac', 'tuoi cua ban'], rev: 'tuổi tác' }
+    ];
+
+    var CRISIS = ['muon chet', 'tu tu', 'tu sat', 'khong muon song', 'het muon song', 'ket thuc cuoc doi', 'khong con muon song', 'chet di cho roi', 'rach tay', 'cat tay', 'lam hai ban than', 'tu lam dau'];
+    var CRISIS_REPLY = 'Mình nghe bạn rồi, và mình thấy lo cho bạn 🫂 Cảm giác này rất nặng nề, nhưng bạn không phải chịu một mình. Hãy nói ngay với một người bạn tin tưởng (người thân, bạn bè, thầy cô), hoặc đến cơ sở y tế gần nhất. Nếu bạn đang gặp nguy hiểm ngay lúc này, hãy gọi 115 hoặc nhờ người ở gần ở bên bạn.\n\nMình chỉ là bé mèo trả lời theo kịch bản nên không thay được người thật, nhưng mình ở đây nghe bạn. Nếu đó chỉ là cách nói cho vui thì xin lỗi vì mình lo xa nhé.';
+
+    function riddle() {
+        var i;
+        do {
+            i = rnd(0, RIDDLES.length - 1);
+        } while (RIDDLES.length > 1 && i === ctx.lastRiddle);
+        ctx.lastRiddle = i;
+        ctx.pending = { a: RIDDLES[i].a, rev: RIDDLES[i].rev, tries: 0 };
+        return 'Đố bạn nè: ' + RIDDLES[i].q + '\n(Gõ "đáp án" nếu muốn biết luôn)';
+    }
+
+    function timeNow() {
+        return 'Bây giờ là ' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ⏰';
+    }
+
+    function dateNow() {
+        return 'Hôm nay là ' + new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' }) + ' 📅';
+    }
+
+    function coin() {
+        return 'Mình tung rồi nè… ' + (Math.random() < 0.5 ? 'SẤP! 🪙' : 'NGỬA! 🪙');
+    }
+
+    function dice() {
+        return 'Mình lắc xúc xắc… ra số ' + rnd(1, 6) + '! 🎲';
+    }
+
+    var CAU_HOI_THEM = [];
+
+    var INTENTS = [
+        { id: 'greet', k: ['xin chao', 'chao', 'hello', 'hi', 'hey', 'alo', 'helu', 'chao ban', 'chao meo', 'chao buoi sang', 'chao buoi toi'], m: 'happy', r: ['Meo~ Chào {name}! Mình là Mều, bé mèo trực trang web này 🐱 Bạn muốn hỏi gì không?', 'Chào {name}! Hôm nay của bạn thế nào rồi?', 'Meo meo! Có {name} ghé chơi nè 😸'] },
+        { id: 'howare', k: ['khoe khong', 'ban khoe', 'khoe ko', 'khoe chua', 'dao nay sao', 'dang lam gi', 'lam gi do', 'ban on khong', 'co on khong'], m: 'happy', r: ['Mình khỏe re! Vừa ngủ trưa xong, no bụng luôn 😸 Còn {name} thì sao?', 'Khỏe lắm, chỉ hơi đói cá thôi 🐟 Còn bạn?', 'Mình ổn! Ngày nào có người nói chuyện là ngày đó vui 💛'] },
+        { id: 'name_q', k: ['ban ten gi', 'ten ban la gi', 'ten gi', 'ban ten la gi', 'em ten gi', 'ten cua ban', 'may ten gi'], m: 'wink', r: ['Mình tên Mều 🐱 Còn bạn tên gì? Gõ "tên mình là ..." để mình nhớ nhé.', 'Mều đây! Bé mèo trực web. Bạn tên gì thế?'] },
+        { id: 'user_name', k: ['toi ten gi', 'minh ten gi', 'em ten gi the', 'ten toi la gi', 'ten minh la gi', 'biet ten minh khong', 'biet ten toi khong'], m: 'smug', r: [function () {
+            return ctx.name ? 'Bạn tên ' + ctx.name + ' chứ gì, mình nhớ mà! 😼' : 'Mình chưa biết tên bạn đó. Gõ "tên mình là ..." để mình nhớ nhé!';
+        }] },
+        { id: 'is_ai', k: ['co phai ai', 'la ai khong', 'la bot', 'chatgpt', 'chat gpt', 'robot', 'nguoi that', 'nguoi hay may', 'co phai nguoi', 'ban la ai', 'ban la gi', 'tri tue nhan tao', 'claude', 'gemini', 'ai that', 'ai day'], m: 'cool', r: ['Mình là Mều, một bé mèo chat bot chạy ngay trên trang web này 🐱 Mình trả lời theo kịch bản được viết sẵn, chứ không phải AI thật như ChatGPT, nên đôi khi mình sẽ ngơ ngác. Nhưng chuyện về web này thì mình rành lắm!'] },
+        { id: 'who_made', k: ['ai lam', 'ai tao ra', 'ai viet', 'chu nhan', 'ai code', 'ai thiet ke', 'nguoi lam web', 'ai lap trinh', 'ai tao', 'ai dung web'], m: 'happy', r: ['Chủ của web này dựng nên mình và cả ngôi nhà này bằng Joomla đó. Mình chỉ là bé mèo trực trang thôi 🐾'] },
+        { id: 'age', k: ['may tuoi', 'bao nhieu tuoi', 'tuoi gi', 'sinh nhat', 'tuoi cua ban', 'ban bao nhieu tuoi'], m: 'smug', r: ['Theo năm mèo thì mình… vài mạng rồi 😼 Mình mới ra đời cùng trang web này thôi!'] },
+        { id: 'thanks', k: ['cam on', 'thanks', 'thank', 'tks', 'cam on nhieu', 'thank you'], m: 'happy', r: ['Không có chi nha {name} 😸', 'Meo~ vui vì giúp được bạn!', 'Có gì cứ hỏi mình tiếp nhé 💛'] },
+        { id: 'bye', k: ['tam biet', 'bye', 'goodbye', 'hen gap lai', 'chao nhe', 'tot nhe', 'minh di day', 'di day', 'off day', 'thoat'], m: 'wink', r: ['Tạm biệt {name}! Nhớ ghé lại chơi nha 🐾', 'Hẹn gặp lại! Mình đi phơi nắng đây ☀️'] },
+        { id: 'goodnight', k: ['ngu ngon', 'chuc ngu ngon', 'di ngu', 'chuc ban ngu ngon', 'ngu day'], m: 'sleepy', r: ['Chúc {name} ngủ ngon, mơ thấy cá thật to nha 🌙🐟', 'Ngủ ngon nhé! Mèo cũng đi ngủ đây 💤'] },
+        { id: 'sorry', k: ['xin loi', 'sorry', 'loi cua minh', 'minh xin loi'], m: 'shy', r: ['Không sao đâu mà, mèo không giận lâu đâu 😽', 'Meo! Bỏ qua hết nha ✨'] },
+        { id: 'compliment', k: ['de thuong', 'dang yeu', 'xinh', 'cute', 'gioi', 'thong minh', 'hay qua', 'tuyet voi', 'gioi qua', 'ngoan', 'cung qua'], m: 'love', r: ['Hihi, {name} khen làm mèo ngượng quá 🙈', 'Cảm ơn nha, mình sẽ cố gắng dễ thương hơn nữa! 💖', 'Meo~ được khen là mình vẫy đuôi liền 🐈'] },
+        { id: 'insult', k: ['ngu ngoc', 'do ngu', 'ban ngu', 'may ngu', 'do ngoc', 'ngoc nghech', 'vo dung', 'do dien', 'ban dot', 'ghet ban', 'ghet may', 'xau qua', 'do te', 'kem qua', 'ngu qua', 'im di', 'cut di', 'bien di'], m: 'sad', r: ['Huhu, mèo buồn đó 😿 Mình chỉ là bé mèo bot thôi, mình sẽ cố trả lời tốt hơn. Bạn thử hỏi cách khác được không?', 'Meo… mình hơi tủi. Nếu mình trả lời chưa đúng thì bạn nói rõ hơn giúp mình nhé.'] },
+        { id: 'love', k: ['yeu ban', 'yeu meo', 'thich ban', 'love you', 'yeu em', 'yeu minh', 'yeu may', 'em yeu', 'anh yeu', 'minh yeu ban'], m: 'love', r: ['Ôi, mèo đỏ mặt luôn rồi nè 🙈💗 Mình cũng quý {name} lắm!', 'Meo~ cảm ơn nha, tim mèo đập thình thịch 💕'] },
+        { id: 'sad', k: ['buon', 'buon qua', 'chan nan', 'met moi', 'stress', 'khoc', 'that vong', 'co don', 'khong vui', 'te qua', 'ap luc', 'lo lang', 'so qua', 'nho nha'], m: 'sad', r: ['Nghe bạn nói mình cũng thấy thương lắm 🫂 Có chuyện gì thì cứ kể mình nghe, mình ngồi đây lắng nghe nè.', 'Ôm bạn một cái nè 🤗 Mệt thì nghỉ một chút, uống nước, hít thở sâu rồi mọi chuyện sẽ nhẹ đi. Muốn mình kể chuyện cười hoặc rủ bạn chơi game cho đỡ buồn không?'] },
+        { id: 'happy', k: ['vui qua', 'hanh phuc', 'vui ve', 'yeah', 'buon cuoi', 'haha', 'hihi', 'hehe', 'kkk', 'lol', 'vui'], m: 'happy', r: ['Hehe, thấy bạn vui là mình cũng vui lây 🎉', 'Tuyệt quá! Cùng ăn mừng bằng một con cá nào 🐟'] },
+        { id: 'bored', k: ['chan', 'buon chan', 'nham', 'khong co gi lam', 'ranh', 'chan qua', 'chan the'], m: 'wink', r: ['Chán á? Vậy vào trang Mini game đi, có 7 trò đang chờ bạn đó 🎮', 'Chán thì mình rủ bạn: kể chuyện cười, đố vui, hoặc chơi game nhé!'] },
+        { id: 'hungry', k: ['doi bung', 'doi qua', 'an gi', 'an chua', 'an com chua', 'muon an'], m: 'tongue', r: ['Nhắc mới nhớ, mình cũng đói cá 🐟 Bạn nhớ đừng bỏ bữa nha!', 'Ăn gì cũng được, miễn là có cá! Hay để mình chọn giúp? Gõ "chọn phở hay bún" thử xem 🍜'] },
+        { id: 'tired', k: ['buon ngu', 'met', 'muon ngu', 'mat ngu', 'ngu chua', 'ngu', 'met qua', 'kiet suc', 'hoi met'], m: 'yawn', r: ['Mệt thì nghỉ chút đi {name}, mèo cũng ngủ 16 tiếng một ngày mà 😴', 'Ngủ một giấc là khỏe lại thôi. Nhớ uống nước nha 💤'] },
+        { id: 'joke', k: ['ke chuyen cuoi', 'chuyen cuoi', 'joke', 'noi dua', 'ke chuyen vui', 'cuoi di', 'lam toi cuoi', 'pha tro', 'hai huoc'], m: 'tongue', again: true, r: JOKES },
+        { id: 'riddle', k: ['cau do', 'do vui', 'do minh', 'do toi', 'do em', 'do nhau'], m: 'smug', again: true, r: [riddle] },
+        { id: 'fact', k: ['su that', 'thong tin ve meo', 'dieu thu vi', 'fun fact', 'kien thuc', 'biet khong', 'meo biet gi', 'kien thuc ve meo'], m: 'starry', again: true, r: FACTS },
+        { id: 'quote', k: ['dong luc', 'khich le', 'co len', 'can dong vien', 'dong vien minh', 'loi khuyen', 'hoc khong vao', 'on thi', 'lam bai tap', 'deadline', 'thi cu', 'thi cuoi ky'], m: 'cool', again: true, r: QUOTES },
+        { id: 'care', k: ['nuoi meo', 'cho meo an', 'meo bi benh', 'thuc an cho meo', 'meo bo an', 'meo nhat', 'meo khong an', 'meo non', 'meo con', 'tiem phong cho meo', 'tay giun', 'cat ve sinh', 'hop cat', 'meo thich an', 'meo an gi', 'meo thich gi', 'meo bi om', 'cham soc meo', 'cach cham meo', 'meo bi non', 'meo nhieu long'], m: 'happy', r: ['Chăm mèo cơ bản: thức ăn riêng cho mèo, nước sạch luôn sẵn, hộp cát sạch, chỗ ngủ ấm và đi thú y tiêm phòng, tẩy giun định kỳ 🐾', 'Mèo không nên ăn: sô cô la, hành, tỏi, nho và nho khô, rượu bia, kẹo cao su có xylitol. Sữa bò cũng không hợp nhiều mèo đâu 🥛', 'Nếu mèo bỏ ăn lâu, nôn nhiều, lờ đờ hoặc khó thở thì nên đưa đi thú y sớm nha. Mình chỉ là bé mèo bot nên không thay được bác sĩ đâu 🏥'] },
+        { id: 'time', k: ['may gio', 'bay gio la may gio', 'gio may roi', 'xem gio', 'may gio roi'], m: 'cool', r: [timeNow] },
+        { id: 'date', k: ['hom nay ngay may', 'ngay bao nhieu', 'thu may', 'hom nay thu may', 'ngay thang'], m: 'cool', r: [dateNow] },
+        { id: 'weather', k: ['thoi tiet', 'troi mua', 'troi nang', 'nhiet do', 'co mua khong', 'nang khong'], m: 'surprised', r: ['Mình là mèo trong máy nên chưa nhìn ra cửa sổ được 🌤️ Bạn xem ứng dụng thời tiết trên điện thoại cho chuẩn nhé!'] },
+        { id: 'coin', k: ['tung dong xu', 'tung xu', 'sap ngua', 'ngua sap', 'dong xu'], m: 'cool', r: [coin] },
+        { id: 'dice', k: ['xuc xac', 'tung xuc xac', 'do xuc xac', 'lac xuc xac'], m: 'cool', r: [dice] },
+        { id: 'cat_vs_dog', k: ['cho hay meo', 'meo hay cho', 'thich cho khong', 'ghet cho', 'cho meo'], m: 'smug', r: ['Mèo tất nhiên rồi 😼 nhưng chó cũng đáng yêu, mình không nói xấu ai đâu nha. Trong game Bắt chuột mình chỉ ghét mỗi lúc chó chui ra thôi 🐶'] },
+        { id: 'sing', k: ['hat di', 'hat bai', 'ca hat', 'hat cho nghe'], m: 'happy', r: ['Meo meo meo~ meo meo meooo~ 🎶 (mình chỉ hát được vậy thôi, đừng chê nha)', '♪ Mèo ơi mèo ơi, phơi nắng thôi, cá ơi cá ơi, đừng chạy nữa ♪ Bài này mình tự chế đó, hihi 🎵'] },
+        { id: 'poem', k: ['lam tho', 'tho ve meo', 'doc tho', 'ngam tho'], m: 'shy', r: ['Mèo ngồi bên cửa sổ xa,\nNhìn trời, nhìn nắng, nhìn nhà, nhìn ai.\nRâu run một sớm mai dài,\nMeo lên một tiếng… là ngày bắt đầu. 🐾'] },
+        { id: 'favorite', k: ['ban thich gi', 'ban thich an gi', 'so thich cua ban', 'mon an yeu thich'], m: 'tongue', r: ['Mình thích cá, ngủ trưa, nằm phơi nắng, và nhất là có người ghé nói chuyện như bạn nè 💛'] },
+        { id: 'capy_what', k: ['capybara la gi', 'capybara la con gi', 'con capybara'], m: 'cool', r: ['Capybara là loài gặm nhấm lớn nhất thế giới, sống ở Nam Mỹ, rất hiền và thích ngâm nước. Trên web này, nó là hòa thượng cưỡi ngựa trắng đi thỉnh kinh đó 🐹'] },
+        { id: 'offtopic', k: ['viet code', 'giai bai tap', 'python', 'javascript', 'lap trinh', 'code giup', 'lam bai giup', 'giai toan', 'viet van', 'dich giup'], m: 'surprised', r: ['Chuyện này hơi vượt tầm của bé mèo rồi 🙀 Mình chỉ rành về web này và tán gẫu thôi. Bạn hỏi thầy cô, bạn bè hoặc một trợ lý AI thật sẽ tốt hơn nha!'] },
+        { id: 'games', k: ['mini game', 'tro choi', 'danh sach game', 'game nao hay', 'game gi hay', 'choi game gi', 'nen choi gi', 'goi y game', 'co game nao', 'game co gi', 'co nhung game nao', 'co game gi', 'choi gi'], m: 'starry', r: ['Web có 7 game, mình gợi ý theo tâm trạng nè:\n• Muốn nhanh tay: Bắt chuột, Hứng cá\n• Muốn thử phản xạ: Mèo nhảy\n• Muốn động não: 2048 mèo, Ghép ảnh\n• Muốn thư giãn: Lật hình tìm cặp\n• Muốn phiêu lưu: Capybara đi thỉnh kinh\nVào trang Mini game rồi chạm vào quả bi tương ứng nhé 🎮'] },
+        { id: 'g_chuot', k: ['bat chuot', 'dap chuot', 'chuot cung meo', 'chuot cho'], m: 'tongue', r: ['Bắt chuột cùng mèo 🐭: 30 giây, chuột và chó chui lên từ 9 cái hang. Chạm chuột +1 điểm, chạm nhầm chó −2 điểm. Càng về cuối chuột chui lên càng nhanh, có lúc hai con cùng lúc đó!'] },
+        { id: 'g_lat', k: ['lat hinh', 'tim cap', 'the bai', 'lat the', 'tro nho'], m: 'wink', r: ['Lật hình tìm cặp 🃏: 16 thẻ, 8 cặp động vật. Lật hai thẻ giống nhau để ghép thành cặp. Càng ít lượt càng tốt, kỷ lục tính theo số lượt.'] },
+        { id: 'g_kinh', k: ['thinh kinh', 'capybara', '81', 'kiep nan', 'tay thien', 'duong tang', 'luan hoi'], m: 'cool', r: ['Capybara đi thỉnh kinh 📜: hòa thượng capybara cưỡi ngựa trắng vượt 81 kiếp nạn (9 chặng). Mỗi yêu quái có một tính cách, hãy chọn cách hợp:\n🙏 Thuyết pháp: kẻ buồn, cô đơn, hối hận\n🏃 Né tránh: kẻ ngủ gật, mù, nóng tính, lao điên\n🐒 Nhờ đồ đệ: kẻ hung hăng, hay thách đấu\n🍑 Biếu đào: kẻ tham ăn, đòi quà\nSai mất 1 tim, hết tim thì luân hồi về đầu chặng, qua mỗi chặng hồi 1 tim.'] },
+        { id: 'g_nhay', k: ['meo nhay', 'chay nhay', 'nhay qua', 'dino', 'khung long', 'game nhay'], m: 'cool', r: ['Mèo nhảy 🐈: chạm vào khung hoặc nhấn Space / ↑ để nhảy qua chướng ngại. Giữ lâu thì nhảy cao hơn. Nhảy cao còn hứng được cá 🐟 (+5 điểm). Càng chạy càng nhanh nên đừng chớp mắt nha!'] },
+        { id: 'g_hungca', k: ['hung ca', 'gio meo', 'bom', 'game hung'], m: 'surprised', r: ['Hứng cá 🐟: 60 giây, kéo giỏ có tai mèo (kéo ngón tay, rê chuột hoặc phím ← →) để hứng cá. Cá vàng +5, bom 💣 làm mất 1 trong 3 mạng. Hứng liên tiếp 5 con thì nhân điểm, tối đa x5!'] },
+        { id: 'g_ghep', k: ['ghep anh', 'xep hinh', 'puzzle', 'truot o', 'ghep hinh'], m: 'starry', r: ['Ghép ảnh 🖼️: chọn 3×3 hoặc 4×4, chạm ô cạnh chỗ trống để trượt (chạm xa thì trượt cả hàng). Giữ nút "Xem ảnh gốc" để xem hình đúng, và có nút "Đổi ảnh" để đổi sang ảnh mèo khác.'] },
+        { id: 'g_2048', k: ['2048', 'gop thu', 'game vuot'], m: 'smug', r: ['2048 mèo 🔢: vuốt (hoặc phím mũi tên) để dồn các con vật, hai con giống nhau gộp thành con lớn hơn: 🐭 → 🐹 → 🐰 → 🐶 → 🦊 → 🐱 → 🐯 → 🦁 → 🐲 → 🦄 → 👑'] },
+        { id: 'bida', k: ['bi a', 'bi da', 'keo tha', 'qua cau', 'qua bi', 'bieu tuong troi', 'troi long vong', 'ban bi', 'giu va keo'], m: 'cool', r: ['Các quả bi game trên trang Mini game là bi a thật đó: giữ chuột (hoặc ngón tay) vào một quả rồi kéo và thả để bắn, nó sẽ va vào quả khác và nảy lại ở mép màn hình. Chạm nhanh vào quả bi để mở game. Thấy rối mắt thì bấm nút ⏸ Dừng chuyển động nhé.'] },
+        { id: 'records', k: ['ky luc', 'diem cao', 'luu diem', 'bang xep hang', 'xep hang', 'diem so', 'luu ky luc'], m: 'starry', r: ['Kỷ lục của mỗi game được lưu ngay trong trình duyệt của bạn, nên chỉ thấy trên máy này và không có bảng xếp hạng chung. Xóa dữ liệu trình duyệt thì kỷ lục cũng mất đó 🏆'] },
+        { id: 'controls', k: ['phim tat', 'dieu khien', 'choi tren dien thoai', 'ban phim', 'cach dieu khien', 'phim nao'], m: 'cool', r: ['Điều khiển nhanh:\n• Mèo nhảy: chạm khung hoặc Space / ↑\n• Hứng cá: kéo ngón tay / rê chuột / ← →\n• 2048: vuốt hoặc phím mũi tên\n• Ghép ảnh: chạm ô hoặc phím mũi tên\n• Mọi game: Esc để đóng\nTrên điện thoại thì cứ chạm và vuốt là được 📱'] },
+        { id: 'web_overview', k: ['web co gi', 'trang web nay', 'web nay la gi', 'gioi thieu web', 'web cua ai', 'website nay', 'trang nay co gi', 'co gi o day', 'day la web gi', 'day la dau', 'web nay co gi'], m: 'starry', r: ['Đây là nhà của Mều 🐾 Có ảnh mèo, một trang giới thiệu Joomla, và trang Mini game với 7 trò chơi. Nền web đen, đổi màu từ từ, con trỏ chuột là chân mèo, và còn có mình để tán gẫu. Bạn muốn xem phần nào?'] },
+        { id: 'web_menu', k: ['menu', 'thanh menu', 'chuyen trang', 'vao dau', 'tim trang', 'trang nao', 'di dau', 'xem trang', 'trang chu', 'trang mini game'], m: 'happy', r: ['Bấm nút ☰ Menu ở thanh trên cùng: máy tính chỉ cần rê chuột vào là menu xổ xuống, điện thoại thì chạm vào. Chọn trang bạn muốn nhé. Trang Mini game có các quả bi game trôi lòng vòng đó 🎮'] },
+        { id: 'web_bg', k: ['mau nen', 'doi mau', 'nen den', 'hieu ung nen', 'nen web', 'mau sac', 'nen doi mau', 'cuc quang', 'tai sao nen', 'nen tai sao'], m: 'cool', r: ['Nền web là màu đen với tối đa 3 màu trôi và đổi sắc từ từ, nhìn như cực quang vậy 🌌 Màu của menu, nút và khung chat cũng đổi theo. Nếu máy bật chế độ giảm chuyển động thì nền sẽ đứng yên.'] },
+        { id: 'web_cursor', k: ['con tro', 'vet chan', 'dau chan', 'chan meo', 'giu chuot', 'keo chuot', 'con tro chuot', 'dau vet'], m: 'wink', r: ['Con trỏ chuột là bàn chân mèo: trắng khi bình thường, hồng khi rê lên nút, cam khi bấm giữ 🐾 Giữ chuột và kéo thì để lại vệt dấu chân nhỏ phát sáng. Phía sau nền còn có các đường dấu chân mèo đi vòng vòng rồi mờ dần. Trên điện thoại không có con trỏ nên phần này chỉ thấy trên máy tính.'] },
+        { id: 'web_chat', k: ['ban lam duoc gi', 'ban biet gi', 'giup gi', 'tro giup', 'huong dan', 'help', 'lenh', 'chuc nang', 'ban giup duoc gi', 'ban co the lam gi', 'ban lam gi', 'giup'], m: 'happy', r: ['Mình làm được nhiều thứ nè:\n• Giải đáp về web này và 7 game\n• Tán gẫu, kể chuyện cười, đố vui, sự thật về mèo\n• Tính toán (12*5+3), xem giờ, tung xu, xúc xắc, chọn giúp ("chọn phở hay bún")\n• Nhớ tên bạn ("tên mình là ...")\nMình không phải AI thật nên câu quá lạ có thể làm mình ngơ ngác 🐱'] },
+        { id: 'web_joomla', k: ['joomla', 'cms', 'trang quan tri', 'quan tri', 'lam bang gi', 'cong nghe gi', 'code gi', 'viet bang gi', 'ngon ngu gi', 'module', 'template'], m: 'cool', r: ['Joomla là hệ quản trị nội dung (CMS) mã nguồn mở, miễn phí: chỉ cần nhập bài, tải ảnh, chọn menu là có web. Web này dựng bằng Joomla: mỗi trang là một bài viết, còn hiệu ứng, game và mình là các module viết bằng HTML, CSS, JavaScript. Muốn đọc kỹ hơn thì xem trang Giới thiệu Joomla nhé.'] },
+        { id: 'web_lag', k: ['lag', 'giat', 'web cham', 'nang may', 'hao pin', 'tat hieu ung', 'giam chuyen dong', 'may yeu', 'do pin', 'nong may', 'web nang', 'tat chuyen dong'], m: 'surprised', r: ['Nếu thấy giật hoặc nóng máy, bạn thử:\n• Bấm nút ⏸ Dừng chuyển động ở trang Mini game\n• Bật chế độ giảm chuyển động của điện thoại hoặc hệ điều hành (nền sẽ đứng yên)\n• Đóng bớt tab khác\n• Tải lại trang (Ctrl+F5 trên máy tính)\nNếu vẫn giật, nhắn chủ web biết máy bạn là loại nào nhé.'] },
+        { id: 'web_bug', k: ['loi', 'khong chay', 'khong hien', 'bi hong', 'khong bam duoc', 'bug', 'game khong chay', 'khong vao duoc', 'bi loi', 'sao khong', 'khong duoc', 'tai khong duoc', 'trang trang', 'bi treo', 'treo may'], m: 'surprised', r: ['Ối, gặp lỗi à? Bạn thử:\n• Tải lại trang (Ctrl+F5 trên máy tính, kéo xuống để làm mới trên điện thoại)\n• Thử trình duyệt khác\n• Tắt tiện ích chặn quảng cáo nếu có\nNếu vẫn lỗi, nhắn cho chủ web biết bạn đang dùng điện thoại hay máy tính, trình duyệt nào, và chỗ nào bị hỏng nhé 🔧'] },
+        { id: 'web_photos', k: ['anh meo', 'album', 'hinh meo', 'anh dep', 'hinh anh', 'xem anh', 'anh o dau', 'tai anh', 'my cat not your cat'], m: 'love', r: ['Ảnh mèo nằm ở trang chủ, kéo xuống để xem nhé 🐱 Bạn cũng có thể chơi game Ghép ảnh với chính các ảnh mèo đó.'] },
+        { id: 'web_contact', k: ['lien he', 'email', 'facebook', 'gop y', 'phan hoi', 'bao loi', 'zalo', 'so dien thoai', 'nhan cho chu web'], m: 'shy', r: ['Chủ web chưa để thông tin liên hệ trong người mình đó 🙈 Nếu bạn quen chủ web thì nhắn trực tiếp nhé!'] },
+        { id: 'web_privacy', k: ['du lieu', 'bao mat', 'luu tin nhan', 'cookie', 'theo doi', 'rieng tu', 'co ghi lai', 'ghi am', 'thu thap', 'gui di dau'], m: 'cool', r: ['Tin nhắn của bạn với mình chỉ nằm trên trang này và mất khi bạn tải lại, không gửi đi đâu cả. Kỷ lục game lưu ngay trong trình duyệt của bạn. Mình cũng chỉ nhớ tên bạn trong lúc đang chat thôi 🔒'] },
+        { id: 'yes', k: ['ok', 'oke', 'uh', 'uhm', 'vang', 'da', 'duoc', 'dong y', 'chuan', 'chuan roi', 'dung roi', 'co'], short: 2, m: 'happy', r: ['Ok luôn! Bạn muốn làm gì tiếp nào? 🐾', 'Được nha! Còn gì mình giúp được nữa không?'] },
+        { id: 'no', k: ['khong', 'thoi', 'khong phai', 'khong can', 'thoi khong'], short: 2, m: 'shy', r: ['Ừm, không sao đâu 😽 Có gì cần thì cứ gọi mình nha.', 'Ok, mình hiểu rồi. Bạn muốn làm gì khác không?'] },
+        { id: 'again', k: ['nua', 'tiep', 'tiep di', 'them nua', 'nua di', 'con khong', 'con gi nua', 'lai di', 'ke nua', 'cho minh them', 'tung nua', 'do nua'], short: 3, m: 'happy', r: [function () {
+            return 'Bạn muốn mình làm gì nữa nào? Gõ "giúp" để xem danh sách nhé 🐱';
+        }] }
+    ];
+
+    CAU_HOI_THEM.forEach(function (x) {
+        INTENTS.push({ id: 'more_' + INTENTS.length, k: x.k, m: x.m || 'happy', r: x.r });
+    });
+
+    var FALLBACK = ['Meo? Câu này khó quá, mình chưa hiểu 🙀 Bạn thử hỏi về web, game hoặc nhờ mình kể chuyện cười nhé!', 'Mình chỉ là bé mèo trả lời theo kịch bản nên chưa hiểu ý bạn. Bạn hỏi cách khác được không? 🐱', 'Hừm… mình nghiêng đầu mà vẫn chưa hiểu 😿 Gõ "giúp" để xem mình làm được gì nhé.'];
+
+    function bestIntent(t) {
+        var words = t.split(' ').length;
+        var best = null;
+        var bs = 0;
+        for (var i = 0; i < INTENTS.length; i++) {
+            var it = INTENTS[i];
+            if (it.short && words > it.short) {
+                continue;
+            }
+            var sc = 0;
+            for (var j = 0; j < it.k.length; j++) {
+                if (has(t, it.k[j])) {
+                    sc += it.k[j].split(' ').length * 2 + 1;
+                }
+            }
+            if (sc > bs) {
+                bs = sc;
+                best = it;
+            }
+        }
+        return best ? { it: best, score: bs } : null;
+    }
+
+    function respond(it) {
+        var r = it.r;
+        var idx;
+        do {
+            idx = Math.floor(Math.random() * r.length);
+        } while (r.length > 1 && idx === ctx.lastIdx[it.id]);
+        ctx.lastIdx[it.id] = idx;
+        var v = r[idx];
+        if (typeof v === 'function') {
+            v = v();
+        }
+        return mk(v, it.m);
+    }
+
+    function handlePending(t) {
+        var p = ctx.pending;
+        if (/(?:dap an|bo cuoc|khong biet|chiu|nghi hoai|bo qua)/.test(t)) {
+            ctx.pending = null;
+            return mk('Đáp án là: ' + p.rev + ' 😼 Muốn câu khác thì gõ "đố vui" nhé!', 'smug');
+        }
+        for (var i = 0; i < p.a.length; i++) {
+            if (has(t, p.a[i])) {
+                ctx.pending = null;
+                return mk(pick(['Chính xác! Bạn giỏi quá 🎉', 'Đúng rồi đó {name}! Mèo phục sát đất 🙇']), 'starry');
+            }
+        }
+        var b = bestIntent(t);
+        if (b && b.score >= 7 && b.it.id !== 'riddle') {
+            ctx.pending = null;
+            return null;
+        }
+        p.tries += 1;
+        if (p.tries >= 3) {
+            ctx.pending = null;
+            return mk('Hết lượt rồi! Đáp án là: ' + p.rev + ' 😹', 'smug');
+        }
+        return mk('Chưa đúng rồi, thử lại nhé (còn ' + (3 - p.tries) + ' lần). Gõ "đáp án" nếu muốn biết luôn.', 'wink');
+    }
+
+    function chooseFrom(s) {
+        var parts = s.replace(/[?!.]+$/, '').split(/\s+(?:hay|hoặc|hoac)\s+/i);
+        if (parts.length < 2) {
+            return null;
+        }
+        parts = parts.map(function (x) {
+            var y = x.trim();
+            var prev;
+            do {
+                prev = y;
+                y = y.replace(/^(?:giúp|giùm|giup|gium|cho|mình|minh|tôi|toi|em|tớ|tui|đi|di)\s+/i, '');
+            } while (y !== prev);
+            return y.trim();
+        }).filter(function (x) {
+            return x;
+        });
+        return parts.length >= 2 ? pick(parts) : null;
+    }
+
+    function answer(raw) {
+        var t = norm(raw);
+        if (!t) {
+            return mk('Meo? Mình chỉ đọc được chữ thôi 😸', 'surprised');
+        }
+        var i;
+        for (i = 0; i < CRISIS.length; i++) {
+            if (has(t, CRISIS[i])) {
+                ctx.pending = null;
+                return mk(CRISIS_REPLY, 'sad');
+            }
+        }
+        if (ctx.pending) {
+            var pr = handlePending(t);
+            if (pr) {
+                return pr;
+            }
+        }
+        var nm = raw.match(/(?:tên\s+(?:mình|tôi|em|tớ|tui)\s+là|(?:mình|tôi|em|tớ|tui)\s+tên(?:\s+là)?|gọi\s+(?:mình|tôi|em|tớ|tui)\s+là)\s+([^\s,.!?]+(?:\s+[^\s,.!?]+){0,2})/i);
+        if (nm) {
+            ctx.name = cap(nm[1].trim());
+            ctx.last = 'name_set';
+            return mk('Rất vui được gặp ' + ctx.name + '! 🐾 Mình nhớ rồi nha. Bạn muốn hỏi gì không?', 'love');
+        }
+        var mv = tryMath(raw);
+        if (mv) {
+            ctx.last = 'math';
+            return mk(mv, 'cool');
+        }
+        if (/^(?:meo+w*|moe+w+|meow+|mew+|nya+n?)(?: (?:meo+w*|moe+w+|meow+|mew+|nya+n?))*$/.test(t)) {
+            ctx.last = 'meow';
+            return mk(pick(['Meo meo! 🐱', 'Meoooow~ 😸', 'Meo? Meo meo meo! 😻', 'Moew moew~ Mình nghe rồi đó!']), pick(['happy', 'wink', 'tongue']));
+        }
+        var rn = t.match(/(?:ngau nhien).*?(\d+) den (\d+)/) || (has(t, 'ngau nhien') ? t.match(/(\d+) den (\d+)/) : null);
+        if (rn) {
+            var lo = Math.min(+rn[1], +rn[2]);
+            var hi = Math.max(+rn[1], +rn[2]);
+            ctx.last = 'rand';
+            return mk('Số ngẫu nhiên từ ' + lo + ' đến ' + hi + ' là: ' + rnd(lo, hi) + ' 🎲', 'cool');
+        }
+        var cm = raw.toLowerCase().match(/(?:chọn|nên)\s+(.+)/);
+        var chosen = cm ? chooseFrom(cm[1]) : null;
+        if (!chosen) {
+            var cn = t.match(/(?:chon|nen) (.+)/);
+            if (cn && /(?:^| )(?:hay|hoac) /.test(cn[1] + ' ')) {
+                chosen = chooseFrom(cn[1]);
+            }
+        }
+        if (chosen) {
+            ctx.last = 'choose';
+            return mk('Mình chọn: ' + chosen + ' 😼', 'smug');
+        }
+        var b = bestIntent(t);
+        if (b) {
+            ctx.unknown = 0;
+            if (b.it.id === 'again') {
+                var prev = null;
+                for (i = 0; i < INTENTS.length; i++) {
+                    if (INTENTS[i].id === ctx.last && INTENTS[i].again) {
+                        prev = INTENTS[i];
+                    }
+                }
+                if (prev) {
+                    return respond(prev);
+                }
+            }
+            ctx.last = b.it.id;
+            return respond(b.it);
+        }
+        ctx.unknown += 1;
+        if (ctx.unknown >= 2) {
+            return mk('Mình ngơ ngác hơi nhiều rồi 🙀 Gõ "giúp" để xem mình làm được gì, hoặc hỏi mình về web và game nhé!', 'surprised');
+        }
+        return mk(pick(FALLBACK), 'surprised');
+    }
+
+    function scrollEnd() {
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function addMsg(text, who) {
+        var d = document.createElement('div');
+        d.className = 'mc-m mc-' + who;
+        d.textContent = text;
+        msgs.appendChild(d);
+        while (msgs.children.length > 60) {
+            msgs.removeChild(msgs.firstChild);
+        }
+        scrollEnd();
+        return d;
+    }
+
+    var chain = Promise.resolve();
+
+    function reply(res) {
+        queued += 1;
+        chain = chain.then(function () {
+            return new Promise(function (done) {
+                var el = addMsg('', 'bot');
+                el.classList.add('mc-typing');
+                el.innerHTML = '<i></i><i></i><i></i>';
+                scrollEnd();
+                setTimeout(function () {
+                    el.classList.remove('mc-typing');
+                    el.textContent = res.t;
+                    scrollEnd();
+                    mood(res.m);
+                    queued -= 1;
+                    done();
+                }, Math.min(1500, 450 + res.t.length * 7) + rnd(0, 250));
+            });
+        });
+    }
+
+    function send(raw) {
+        var v = raw.trim();
+        if (!v || queued > 5) {
+            return;
+        }
+        addMsg(v, 'me');
+        input.value = '';
+        reply(answer(v));
+    }
+
+    var started = false;
+
+    function openChat() {
+        win.hidden = false;
+        root.classList.add('mc-open');
+        tip.classList.remove('mc-show');
+        if (!started) {
+            started = true;
+            reply(mk('Meo~ Mình là Mều, bé mèo trực trang web này 🐱 Bạn thử gõ "web có gì", "chơi game gì hay", "kể chuyện cười", hoặc "giúp" để xem mình làm được gì nhé!', 'happy'));
+        }
+        input.focus();
+    }
+
+    function closeChat() {
+        win.hidden = true;
+        root.classList.remove('mc-open');
+    }
+
+    fab.addEventListener('click', function () {
+        if (win.hidden) {
+            openChat();
+        } else {
+            closeChat();
+        }
+    });
+    closeBtn.addEventListener('click', closeChat);
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !win.hidden) {
+            closeChat();
+        }
+    });
+    input.addEventListener('input', function () {
+        lastType = performance.now();
+    });
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        lastType = performance.now();
+        send(input.value);
+    });
+
+    setTimeout(function () {
+        if (win.hidden) {
+            tip.classList.add('mc-show');
+            clearTimeout(tipT);
+            tipT = setTimeout(function () {
+                tip.classList.remove('mc-show');
+            }, 4500);
+        }
+    }, 1800);
+})();
+</script>
